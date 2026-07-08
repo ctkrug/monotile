@@ -24,19 +24,37 @@ src/
     palette.js     Named flat color schemes for the default "line art" view (background/grid/
                    tile color) — see coloring.js for the per-tile schemes.
     coloring.js    Per-tile color schemes: supertile (by type label), generation (by
-                   substitution depth), orientation (by placement rotation). Pure functions of
-                   a tile record, so easy to unit test independent of the canvas.
+                   substitution depth), orientation (by placement rotation), plus lerpColor —
+                   parses hex/hsl()/rgb() strings and blends them — used by ripple.js. Pure
+                   functions of a tile record, so easy to unit test independent of the canvas.
+    ripple.js      The recolor-ripple animation's math: createRipple() measures each visible
+                   tile's distance from the click point; rippleColor(ripple, tile, elapsedMs) is
+                   pure and time-injected (elapsed is a parameter, never read from a clock), so
+                   the whole stagger-outward curve is unit-testable without a real rAF loop.
+    svgExport.js   buildSvg(tiles, palette, scheme, bounds) renders the current tile set to a
+                   standalone SVG string for the poster export — plain <rect>/<polygon> only, no
+                   external asset references.
+    audio.js       Synth SFX (WebAudio oscillators/noise, no audio files) for the recolor chime
+                   and export shutter, plus the isMuted()/setMuted() flag that backs the mute
+                   toggle — persisted to localStorage when available, in-memory-only otherwise.
+                   Every play function no-ops safely if AudioContext doesn't exist.
     geometry.js    Plain point/vector helpers (add/subtract/rotate/bounds) shared across the
                    above.
     renderer.js    Canvas draw pass: background, grid, then every visible tile as a stroked,
-                   lightly-filled polygon, colored via coloring.js when a scheme is active.
+                   lightly-filled polygon. Colors come from coloring.js via a scheme name, or
+                   from an optional per-tile colorFor(tile) override — main.js uses the latter
+                   during a recolor ripple, so renderer.js never needs to know about ripples.
   main.js          Wires it all together: owns the camera, a single TileField, and the active
-                   coloring scheme; handles pointer/wheel input and scheme-button clicks; and
-                   re-renders (grid + tiles + toolbar readout) on every change.
+                   coloring scheme; handles pointer/wheel input, scheme-button clicks (which spin
+                   up a ripple animation via ripple.js unless prefers-reduced-motion is set), the
+                   export button (svgExport.js + a Blob download + flash/toast feedback), and the
+                   mute toggle (audio.js); re-renders on every change.
   style.css        Design tokens (see docs/DESIGN.md) as CSS custom properties, toolbar/canvas/
-                   scheme-panel layout.
-index.html         Toolbar (wordmark + live zoom readout), the canvas, and the coloring-scheme
-                   picker panel.
+                   scheme-panel layout, plus the export button, mute toggle, camera-flash
+                   overlay, and toast styling.
+index.html         Toolbar (wordmark, live zoom readout, mute toggle), the canvas, the
+                   coloring-scheme picker panel (with the export button), and the flash/toast
+                   feedback elements.
 ```
 
 ## The substitution engine, and why it's the *spectre* not the *hat*
