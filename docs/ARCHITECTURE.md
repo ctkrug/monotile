@@ -38,23 +38,32 @@ src/
                    and export shutter, plus the isMuted()/setMuted() flag that backs the mute
                    toggle — persisted to localStorage when available, in-memory-only otherwise.
                    Every play function no-ops safely if AudioContext doesn't exist.
-    geometry.js    Plain point/vector helpers (add/subtract/rotate/bounds) shared across the
-                   above.
+    geometry.js    Plain point/vector helpers (add/subtract/rotate/bounds/pointInPolygon) shared
+                   across the above; pointInPolygon backs the tile inspector's hit-testing.
+    inspector.js   findTileAt(tiles, point) — a ray-casting hit-test over the visible tile list,
+                   used both by the hover readout and the click-to-pin inspector panel.
+    pulse.js       The pinned-tile outline pulse: pulseIntensity(elapsedMs) is pure and
+                   time-injected like ripple.js — 2 bright 140ms pulses, then it settles at a low
+                   steady intensity so a pin stays visible without staying loud indefinitely.
     renderer.js    Canvas draw pass: background, grid, then every visible tile as a stroked,
-                   lightly-filled polygon. Colors come from coloring.js via a scheme name, or
-                   from an optional per-tile colorFor(tile) override — main.js uses the latter
-                   during a recolor ripple, so renderer.js never needs to know about ripples.
+                   lightly-filled polygon (via the shared tracePolygon() helper). Colors come
+                   from coloring.js via a scheme name, or from an optional per-tile
+                   colorFor(tile) override — main.js uses the latter during a recolor ripple, so
+                   renderer.js never needs to know about ripples. An optional {tile, intensity}
+                   highlight param draws the pinned-tile outline from pulse.js.
   main.js          Wires it all together: owns the camera, a single TileField, and the active
                    coloring scheme; handles pointer/wheel input, scheme-button clicks (which spin
                    up a ripple animation via ripple.js unless prefers-reduced-motion is set), the
-                   export button (svgExport.js + a Blob download + flash/toast feedback), and the
-                   mute toggle (audio.js); re-renders on every change.
+                   export button (svgExport.js + a Blob download + flash/toast feedback), the
+                   mute toggle (audio.js), and the tile inspector (inspector.js + pulse.js —
+                   every pointermove updates the crosshair/readout, and a non-drag click pins a
+                   tile); re-renders on every change.
   style.css        Design tokens (see docs/DESIGN.md) as CSS custom properties, toolbar/canvas/
                    scheme-panel layout, plus the export button, mute toggle, camera-flash
-                   overlay, and toast styling.
+                   overlay, toast, crosshair, survey readout, and inspector panel styling.
 index.html         Toolbar (wordmark, live zoom readout, mute toggle), the canvas, the
-                   coloring-scheme picker panel (with the export button), and the flash/toast
-                   feedback elements.
+                   coloring-scheme picker panel (with the export button), the crosshair/survey
+                   readout, the tile inspector panel, and the flash/toast feedback elements.
 ```
 
 ## The substitution engine, and why it's the *spectre* not the *hat*
