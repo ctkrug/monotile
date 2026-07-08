@@ -50,6 +50,9 @@ src/
                    ripple.js/pulse.js, so the gesture math is unit-tested without a browser;
                    main.js compares distance across moves to derive a zoom factor for
                    camera.zoomAt and uses the midpoint as its anchor point.
+    keyboardNav.js panStepForKey/zoomFactorForKey/isResetKey — pure key-to-intent mapping for
+                   the canvas's keydown handler, so arrow/+-/Home behavior is unit-tested without
+                   a DOM. main.js's keydown listener just calls these and re-renders.
     renderer.js    Canvas draw pass: background, grid, then every visible tile as a stroked,
                    lightly-filled polygon (via the shared tracePolygon() helper). Colors come
                    from coloring.js via a scheme name, or from an optional per-tile
