@@ -53,6 +53,9 @@ src/
     keyboardNav.js panStepForKey/zoomFactorForKey/isResetKey — pure key-to-intent mapping for
                    the canvas's keydown handler, so arrow/+-/Home behavior is unit-tested without
                    a DOM. main.js's keydown listener just calls these and re-renders.
+    railToggle.js  nextRailExpanded/railToggleLabel/railToggleGlyph — pure expand/collapse state
+                   for the desktop control-rail toggle (aria-label + glyph per state), unit-tested
+                   without a DOM like keyboardNav.js/touch.js.
     renderer.js    Canvas draw pass: background, grid, then every visible tile as a stroked,
                    lightly-filled polygon (via the shared tracePolygon() helper). Colors come
                    from coloring.js via a scheme name, or from an optional per-tile
@@ -69,7 +72,10 @@ src/
                    pointer in a Map so a second touch promotes a single-finger pan into a
                    two-finger pinch-zoom (touch.js + camera.zoomAt) mid-gesture; losing a finger
                    mid-pinch resets the gesture rather than resuming a pan. Also wires the
-                   mobile-only sheet-handle tap to expand/collapse the scheme panel.
+                   mobile-only sheet-handle tap to expand/collapse the scheme panel, the
+                   desktop-only rail-toggle tap to collapse it to a slim docked tab
+                   (railToggle.js), and the canvas keydown handler (keyboardNav.js) for
+                   arrow/+-/Home pan and zoom.
   style.css        Design tokens (see docs/DESIGN.md) as CSS custom properties, toolbar/canvas/
                    scheme-panel layout, plus the export button, mute toggle, camera-flash
                    overlay, toast, crosshair, survey readout, and inspector panel styling. Below
