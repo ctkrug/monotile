@@ -53,6 +53,12 @@ let pinnedTile = null;
 let pulseStartTime = 0;
 let pointerDownPos = null;
 
+// Tracks every finger/pointer currently down so a second touch can promote a
+// single-finger pan into a two-finger pinch-zoom mid-gesture.
+const activePointers = new Map();
+let gestureMode = "none"; // "pan" | "pinch"
+let pinchAnchor = null;
+
 const tileField = createTileField();
 
 function prefersReducedMotion() {
@@ -200,14 +206,39 @@ function pointerPos(event) {
 const CLICK_DRAG_THRESHOLD = 4;
 
 canvas.addEventListener("pointerdown", (event) => {
-  dragging = true;
-  lastPointer = pointerPos(event);
-  pointerDownPos = lastPointer;
+  const pos = pointerPos(event);
+  activePointers.set(event.pointerId, pos);
   canvas.setPointerCapture(event.pointerId);
+
+  if (activePointers.size === 2) {
+    gestureMode = "pinch";
+    dragging = false;
+    pointerDownPos = null;
+    const [a, b] = [...activePointers.values()];
+    pinchAnchor = pinchState(a, b);
+  } else if (activePointers.size === 1) {
+    gestureMode = "pan";
+    dragging = true;
+    lastPointer = pos;
+    pointerDownPos = pos;
+  }
 });
 
 canvas.addEventListener("pointermove", (event) => {
   const pos = pointerPos(event);
+  if (activePointers.has(event.pointerId)) activePointers.set(event.pointerId, pos);
+
+  if (gestureMode === "pinch" && activePointers.size === 2) {
+    const [a, b] = [...activePointers.values()];
+    const next = pinchState(a, b);
+    if (pinchAnchor.distance > 0) {
+      camera = zoomAt(camera, next.midpoint, next.distance / pinchAnchor.distance);
+      render();
+    }
+    pinchAnchor = next;
+    return;
+  }
+
   if (dragging) {
     const delta = { x: pos.x - lastPointer.x, y: pos.y - lastPointer.y };
     camera = panBy(camera, delta);
@@ -222,16 +253,35 @@ function endDrag() {
   pointerDownPos = null;
 }
 
+// Ends the whole gesture (pan or pinch) for one lifted/cancelled pointer. A
+// pinch that loses a finger resets fully rather than trying to resume as a
+// pan from the remaining finger's current position, which would otherwise
+// jump the camera by the distance that finger moved during the pinch.
+function endGesture(pointerId) {
+  activePointers.delete(pointerId);
+  if (gestureMode === "pinch") {
+    gestureMode = "none";
+    pinchAnchor = null;
+    endDrag();
+    return;
+  }
+  gestureMode = "none";
+  endDrag();
+}
+
 canvas.addEventListener("pointerup", (event) => {
-  if (pointerDownPos) {
+  if (gestureMode === "pan" && pointerDownPos) {
     const pos = pointerPos(event);
     const moved = Math.hypot(pos.x - pointerDownPos.x, pos.y - pointerDownPos.y);
     if (moved < CLICK_DRAG_THRESHOLD) pinTileAt(pos);
   }
-  endDrag();
+  endGesture(event.pointerId);
 });
-canvas.addEventListener("pointercancel", endDrag);
+canvas.addEventListener("pointercancel", (event) => endGesture(event.pointerId));
 canvas.addEventListener("pointerleave", () => {
+  activePointers.clear();
+  gestureMode = "none";
+  pinchAnchor = null;
   endDrag();
   hideSurveyReadout();
 });
