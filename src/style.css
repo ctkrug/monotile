@@ -1,0 +1,77 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap");
+
+:root {
+  --bg: #0b1220;
+  --surface-1: #101b30;
+  --surface-2: #16223c;
+  --text: #e8f1ff;
+  --text-muted: #8fa3c4;
+  --accent: #5ec8ff;
+  --accent-support: #ffb454;
+  --success: #6bcf8f;
+  --danger: #ff6b6b;
+
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --radius: 4px;
+  --shadow-panel: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --glow-focus: 0 0 0 3px rgba(94, 200, 255, 0.25);
+  --transition-ui: 160ms ease-out;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  overflow: hidden;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+#tiling-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+
+#tiling-canvas:active {
+  cursor: grabbing;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--glow-focus);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+  }
+}
