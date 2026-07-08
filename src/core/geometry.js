@@ -44,3 +44,13 @@ export function boundsOf(points) {
   }
   return [minX, minY, maxX, maxY];
 }
+
+/** Grows a [minX, minY, maxX, maxY] box by `margin` on every side. */
+export function expandBounds([minX, minY, maxX, maxY], margin) {
+  return [minX - margin, minY - margin, maxX + margin, maxY + margin];
+}
+
+/** Whether two [minX, minY, maxX, maxY] boxes overlap (touching counts). */
+export function boundsIntersect(a, b) {
+  return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+}
