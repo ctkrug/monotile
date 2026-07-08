@@ -37,6 +37,23 @@
           </button>
           <button type="button" class="scheme-btn export-btn" id="export-btn">Export SVG</button>
         </div>
+        <div class="crosshair" id="crosshair" aria-hidden="true"></div>
+        <div class="survey-readout" id="survey-readout" aria-hidden="true"></div>
+        <div class="inspector-panel" id="inspector-panel" role="group" aria-label="Tile inspector" hidden>
+          <button type="button" class="inspector-close" id="inspector-close" aria-label="Close tile inspector">
+            &times;
+          </button>
+          <dl>
+            <dt>Type</dt>
+            <dd id="inspector-type"></dd>
+            <dt>Generation</dt>
+            <dd id="inspector-generation"></dd>
+            <dt>Orientation</dt>
+            <dd id="inspector-orientation"></dd>
+            <dt>Lineage</dt>
+            <dd id="inspector-lineage"></dd>
+          </dl>
+        </div>
       </div>
       <div class="flash" id="export-flash" aria-hidden="true"></div>
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
