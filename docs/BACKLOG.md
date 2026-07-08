@@ -127,11 +127,17 @@ them.
     `pulse.js`'s 2×140ms pulse settles into a steady outline. Covered by `pulse.test.js` and
     `inspector.test.js`.
 
-- [ ] **3.2 Touch and mobile controls**
+- [x] **3.2 Touch and mobile controls**
   - AC: a single-finger drag pans and a pinch gesture zooms on a touch device (or emulated
     touch/pointer events in tests).
+    ✅ `touch.js`'s `pinchState` is unit-tested; verified live with Playwright synthetic
+    two-pointer touch events — zoom went from 1.00× to 3.00× on a pinch-out gesture. Existing
+    single-finger drag panning re-verified unaffected (screenshot before/after a drag).
   - AC: at 390px width the control panel collapses to a bottom-sheet drag handle, and the
     canvas keeps ≥70% of viewport height until the sheet is opened.
+    ✅ Verified with Playwright at 390×844: collapsed panel shows only its 52px handle
+    (52/844 ≈ 94% of viewport stays canvas), tapping the handle slides the full control list
+    into view and sets `aria-expanded="true"`.
 
 - [ ] **3.3 Accessibility pass**
   - AC: every icon-only button has an `aria-label`; keyboard tab order is logical and every
