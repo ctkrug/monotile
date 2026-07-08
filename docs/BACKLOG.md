@@ -139,11 +139,20 @@ them.
     (52/844 ≈ 94% of viewport stays canvas), tapping the handle slides the full control list
     into view and sets `aria-expanded="true"`.
 
-- [ ] **3.3 Accessibility pass**
+- [x] **3.3 Accessibility pass**
   - AC: every icon-only button has an `aria-label`; keyboard tab order is logical and every
     interactive element shows a visible focus state.
+    ✅ The one icon-only control (`#inspector-close`, "×") already carried
+    `aria-label="Close tile inspector"`. Verified tab order with Playwright: mute toggle →
+    sheet handle (mobile) / scheme buttons (desktop) → export, with `display: none` correctly
+    excluding the hidden mobile handle from desktop tab order; confirmed the `:focus-visible`
+    glow ring renders on a screenshot of a tabbed-to button.
   - AC: the export toast/status text uses an ARIA live region; all touch targets measure
     ≥44×44px.
+    ✅ `#toast` already had `role="status"`/`aria-live="polite"`. Measured every interactive
+    element's bounding box at 390px with Playwright — all ≥44×44 after growing
+    `#inspector-close` from 28px to 44px (its one violation) and widening the inspector `dl`'s
+    padding to match.
 
 - [ ] **3.4 Static deploy readiness**
   - AC: `npm run build` produces a single self-contained `dist/` directory that runs correctly
