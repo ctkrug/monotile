@@ -191,6 +191,19 @@ them.
     `aria-expanded` flips true/false, the 44×44px button is focusable, and the previously
     selected scheme ("Line") is still shown pressed after re-expanding.
 
+- [ ] **3.8 First-visit pan hint**
+  - AC: on a visitor's first load, a themed callout invites them to drag/pan the canvas; it
+    disappears the first time they pan, zoom, or use a keyboard shortcut, and never reappears on
+    later visits (persisted via `localStorage`).
+  - AC: the hint respects `prefers-reduced-motion` (no bounce/pulse animation, just a static
+    callout) and doesn't block any pointer/keyboard interaction with the canvas underneath it.
+
+- [ ] **3.9 Shareable view link**
+  - AC: a "Copy link" control encodes the current camera (pan + zoom) and coloring scheme into
+    the page URL; visiting that URL restores the exact same view.
+  - AC: a malformed or missing URL hash falls back to the default view without throwing or
+    showing a blank/broken canvas.
+
 - [ ] **3.5 Final design ship-gate pass**
   - AC: every D4 reject condition in `docs/DESIGN.md` is checked and false (no unstyled native
     controls, has a real favicon, has background depth/atmosphere, hero isn't a small box in
