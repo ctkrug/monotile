@@ -38,11 +38,12 @@ repeating — then recolor it into a poster in one click.
   no external references, ready to print.
 - **Synth sound + mute** — a soft chime on recolor and a shutter click on export, generated
   entirely in WebAudio (no audio files); mute your preference and it persists across reloads.
+- **Tile inspector** — a live crosshair and coordinate/generation/type readout follow your
+  cursor; click a tile to pin an inspector panel with its type, generation, orientation, and
+  supertile lineage.
 
 ## Planned features
 
-- **Tile & generation inspector** — click a tile to see its type, orientation, and which
-  supertile it belongs to, with a live coordinate readout that follows your cursor.
 - **Touch controls and a full accessibility pass** — see [`docs/BACKLOG.md`](docs/BACKLOG.md)
   Epic 3 for the rest of the ship checklist.
 
@@ -58,9 +59,10 @@ including a subpath.
 
 The core loop is live end-to-end: drag to pan and scroll to zoom an infinite, genuinely
 non-repeating spectre tiling, recolor it by orientation/generation/supertile with an animated
-ripple, and export the current view as a poster-ready SVG. The tile inspector and a full
-touch/accessibility pass are still ahead — see [`docs/VISION.md`](docs/VISION.md) for the full
-design, [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for how it's built, and
+ripple, export the current view as a poster-ready SVG, and inspect any tile's type/generation/
+lineage. Touch controls and a full accessibility pass are still ahead — see
+[`docs/VISION.md`](docs/VISION.md) for the full design,
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for how it's built, and
 [`docs/BACKLOG.md`](docs/BACKLOG.md) for the build plan.
 
 ## Development
