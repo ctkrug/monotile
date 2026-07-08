@@ -19,6 +19,18 @@
       </header>
       <div class="canvas-wrap">
         <canvas id="tiling-canvas" aria-label="Infinite monotile pattern, draggable to pan"></canvas>
+        <div class="scheme-panel" role="group" aria-label="Coloring scheme">
+          <button type="button" class="scheme-btn" data-scheme="" aria-pressed="true">Line</button>
+          <button type="button" class="scheme-btn" data-scheme="supertile" aria-pressed="false">
+            Supertile
+          </button>
+          <button type="button" class="scheme-btn" data-scheme="generation" aria-pressed="false">
+            Generation
+          </button>
+          <button type="button" class="scheme-btn" data-scheme="orientation" aria-pressed="false">
+            Orientation
+          </button>
+        </div>
       </div>
     </div>
     <script type="module" src="./src/main.js"></script>
