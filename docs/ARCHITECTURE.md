@@ -21,18 +21,22 @@ src/
                    tiles worth drawing for a viewport: viewport culling + an incremental cache.
     camera.js      Pan/zoom state (offset + zoom), screen<->world conversion, cursor-anchored
                    zoom. Pre-existing scaffold, unchanged this run.
-    palette.js     Named color schemes (only "blueprint" is fully wired into the renderer yet;
-                   the others are recognized but not yet selectable — see BACKLOG Epic 2).
+    palette.js     Named flat color schemes for the default "line art" view (background/grid/
+                   tile color) — see coloring.js for the per-tile schemes.
+    coloring.js    Per-tile color schemes: supertile (by type label), generation (by
+                   substitution depth), orientation (by placement rotation). Pure functions of
+                   a tile record, so easy to unit test independent of the canvas.
     geometry.js    Plain point/vector helpers (add/subtract/rotate/bounds) shared across the
                    above.
     renderer.js    Canvas draw pass: background, grid, then every visible tile as a stroked,
-                   lightly-filled polygon.
-  main.js          Wires it all together: owns the camera and a single TileField, handles
-                   pointer/wheel input, and re-renders (grid + tiles + toolbar readout) on
-                   every camera change.
-  style.css        Design tokens (see docs/DESIGN.md) as CSS custom properties, toolbar/canvas
-                   layout.
-index.html         Toolbar (wordmark + live zoom readout) + the canvas.
+                   lightly-filled polygon, colored via coloring.js when a scheme is active.
+  main.js          Wires it all together: owns the camera, a single TileField, and the active
+                   coloring scheme; handles pointer/wheel input and scheme-button clicks; and
+                   re-renders (grid + tiles + toolbar readout) on every change.
+  style.css        Design tokens (see docs/DESIGN.md) as CSS custom properties, toolbar/canvas/
+                   scheme-panel layout.
+index.html         Toolbar (wordmark + live zoom readout), the canvas, and the coloring-scheme
+                   picker panel.
 ```
 
 ## The substitution engine, and why it's the *spectre* not the *hat*
