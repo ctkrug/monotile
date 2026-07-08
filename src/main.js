@@ -134,16 +134,20 @@ function triggerDownload(filename, content, mimeType) {
   URL.revokeObjectURL(url);
 }
 
+function showToast(message) {
+  toastEl.textContent = message;
+  toastEl.classList.add("toast-visible");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove("toast-visible"), 2200);
+}
+
 function showExportFeedback(filename) {
   if (!prefersReducedMotion()) {
     flashEl.classList.remove("flash-active");
     void flashEl.offsetWidth; // restart the keyframe animation
     flashEl.classList.add("flash-active");
   }
-  toastEl.textContent = `Exported ${filename}`;
-  toastEl.classList.add("toast-visible");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toastEl.classList.remove("toast-visible"), 2200);
+  showToast(`Exported ${filename}`);
 }
 
 function resize() {
