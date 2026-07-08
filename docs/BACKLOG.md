@@ -71,28 +71,46 @@ them.
     `docs/DESIGN.md`'s layout intent describes — left for a follow-up design pass since the
     fixed panel doesn't yet crowd the canvas at any tested breakpoint (390/768/1440).
 
-- [ ] **2.2 Recolor ripple transition**
+- [x] **2.2 Recolor ripple transition**
   - AC: clicking a swatch cross-fades tile colors over ~250ms, staggered outward from the click
     point, per the `docs/DESIGN.md` juice plan.
+    ✅ `ripple.js` stages each tile's fade by its distance from the click point so the whole
+    effect still finishes within `RIPPLE_TOTAL_MS`; verified against real rAF timing in a
+    headless browser and covered by `ripple.test.js`.
   - AC: with `prefers-reduced-motion` set, the color change still applies but the staggered
     animation is skipped (instant swap).
+    ✅ Verified with Playwright's `emulateMedia({ reducedMotion: "reduce" })` — scheme swaps
+    instantly with no animation frames.
 
-- [ ] **2.3 SVG poster export**
+- [x] **2.3 SVG poster export**
   - AC: clicking export downloads a valid SVG containing vector paths for every tile currently
     visible, and it opens correctly in a standalone SVG viewer (not just in-browser).
+    ✅ Verified with Playwright: triggered a real download, parsed the file — valid XML header,
+    122 `<polygon>` elements for the visible tiles at the tested viewport.
   - AC: the exported SVG has no external asset references (fonts/images inlined or unused) so
     it prints correctly outside the app.
+    ✅ `svgExport.js` emits only `<rect>`/`<polygon>`; `svgExport.test.js` asserts no `<image>`,
+    `xlink:href`, `@import`, `<link>`, `url()`, or `font-family`.
 
-- [ ] **2.4 Export feedback**
+- [x] **2.4 Export feedback**
   - AC: export triggers the camera-flash overlay and toast defined in `docs/DESIGN.md`,
     auto-dismissing without further user action.
+    ✅ Verified visually — toast reads "Exported monotile-export.svg" and clears itself via
+    `setTimeout`; flash is skipped (not just instant) under reduced motion.
   - AC: the synth "shutter" SFX plays via WebAudio (no audio file) and export doesn't throw when
     `AudioContext` is unavailable (e.g. in a test environment).
+    ✅ `audio.test.js` — `playExportShutter`/`playRecolorChime` no-op safely with no
+    `AudioContext` global.
 
-- [ ] **2.5 Mute toggle with persistence**
+- [x] **2.5 Mute toggle with persistence**
   - AC: toggling mute silences all SFX (recolor chime, export shutter, tile-pin tick)
     immediately, with no queued sounds after the toggle.
+    ✅ Every play function checks `isMuted()` before scheduling any WebAudio node, so there's
+    nothing to flush — muting takes effect on the very next call. (Tile-pin tick isn't built yet;
+    it ships with the inspector in story 3.1.)
   - AC: mute state persists across a page reload via `localStorage`.
+    ✅ Verified with Playwright: toggled mute, reloaded the page, toggle still read "Sound: Off".
+    Also unit-tested via a stubbed `localStorage` across a simulated module reload.
 
 ## Epic 3 — Inspector, access & ship
 
