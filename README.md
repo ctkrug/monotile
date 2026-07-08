@@ -41,11 +41,15 @@ repeating — then recolor it into a poster in one click.
 - **Tile inspector** — a live crosshair and coordinate/generation/type readout follow your
   cursor; click a tile to pin an inspector panel with its type, generation, orientation, and
   supertile lineage.
+- **Touch and mobile** — single-finger drag pans and a two-finger pinch zooms on touch devices;
+  below 390px the control panel collapses into a bottom sheet so the tiling keeps the screen.
+- **Accessible by default** — every control has themed hover/focus/active states and a ≥44px
+  touch target, the export toast is an ARIA live region, and keyboard tab order is logical.
 
 ## Planned features
 
-- **Touch controls and a full accessibility pass** — see [`docs/BACKLOG.md`](docs/BACKLOG.md)
-  Epic 3 for the rest of the ship checklist.
+- See [`docs/BACKLOG.md`](docs/BACKLOG.md) Epic 3 for the rest of the ship checklist (final
+  design gate ahead of launch).
 
 ## Stack
 
@@ -57,10 +61,10 @@ including a subpath.
 
 ## Status
 
-The core loop is live end-to-end: drag to pan and scroll to zoom an infinite, genuinely
-non-repeating spectre tiling, recolor it by orientation/generation/supertile with an animated
-ripple, export the current view as a poster-ready SVG, and inspect any tile's type/generation/
-lineage. Touch controls and a full accessibility pass are still ahead — see
+The core loop is live end-to-end: drag or pinch to pan/zoom an infinite, genuinely non-repeating
+spectre tiling on desktop or touch, recolor it by orientation/generation/supertile with an
+animated ripple, export the current view as a poster-ready SVG, and inspect any tile's type/
+generation/lineage. A final design ship-gate pass is still ahead — see
 [`docs/VISION.md`](docs/VISION.md) for the full design,
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for how it's built, and
 [`docs/BACKLOG.md`](docs/BACKLOG.md) for the build plan.
