@@ -1,6 +1,7 @@
-import { createCamera, panBy, zoomAt } from "./core/camera.js";
+import { createCamera, panBy, screenToWorld, zoomAt } from "./core/camera.js";
 import { DEFAULT_PALETTE, PALETTES } from "./core/palette.js";
 import { draw } from "./core/renderer.js";
+import { createTileField } from "./core/tileField.js";
 
 const canvas = document.getElementById("tiling-canvas");
 const ctx = canvas.getContext("2d");
@@ -10,6 +11,25 @@ let palette = PALETTES[DEFAULT_PALETTE];
 let size = { width: 0, height: 0 };
 let dragging = false;
 let lastPointer = { x: 0, y: 0 };
+
+const tileField = createTileField();
+
+// Fetch tiles for a region larger than the viewport so panning reveals
+// tiles that are already generated, instead of popping in at the edge.
+const CULL_MARGIN_RATIO = 0.5;
+
+function visibleTiles() {
+  const topLeft = screenToWorld(camera, { x: 0, y: 0 });
+  const bottomRight = screenToWorld(camera, { x: size.width, y: size.height });
+  const bounds = [
+    Math.min(topLeft.x, bottomRight.x),
+    Math.min(topLeft.y, bottomRight.y),
+    Math.max(topLeft.x, bottomRight.x),
+    Math.max(topLeft.y, bottomRight.y),
+  ];
+  const margin = (bounds[2] - bounds[0]) * CULL_MARGIN_RATIO;
+  return tileField.update(bounds, margin).tiles;
+}
 
 function resize() {
   const dpr = window.devicePixelRatio || 1;
@@ -22,7 +42,7 @@ function resize() {
 }
 
 function render() {
-  draw(ctx, camera, size, palette);
+  draw(ctx, camera, size, palette, visibleTiles());
 }
 
 function pointerPos(event) {
