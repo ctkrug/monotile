@@ -43,6 +43,11 @@ repeating — then recolor it into a poster in one click.
   supertile lineage.
 - **Touch and mobile** — single-finger drag pans and a two-finger pinch zooms on touch devices;
   below 390px the control panel collapses into a bottom sheet so the tiling keeps the screen.
+- **Keyboard-operable** — with the canvas focused, arrow keys pan (Shift for a bigger step),
+  `+`/`-` zoom, and `Home` resets the view; on wider screens the control panel can collapse to a
+  slim docked rail without the canvas ever resizing.
+- **Shareable views** — Copy Link encodes the current pan, zoom, and coloring scheme into the
+  URL, so a specific view of the tiling can be sent or bookmarked and reopens exactly as left.
 - **Accessible by default** — every control has themed hover/focus/active states and a ≥44px
   touch target, the export toast is an ARIA live region, and keyboard tab order is logical.
 
@@ -61,9 +66,10 @@ including a subpath.
 
 ## Status
 
-The core loop is live end-to-end: drag or pinch to pan/zoom an infinite, genuinely non-repeating
-spectre tiling on desktop or touch, recolor it by orientation/generation/supertile with an
-animated ripple, export the current view as a poster-ready SVG, and inspect any tile's type/
+The core loop is live end-to-end: drag, pinch, or use the keyboard to pan/zoom an infinite,
+genuinely non-repeating spectre tiling on desktop or touch, recolor it by
+orientation/generation/supertile with an animated ripple, export the current view as a
+poster-ready SVG, copy a link back to that exact view, and inspect any tile's type/
 generation/lineage. A final design ship-gate pass is still ahead — see
 [`docs/VISION.md`](docs/VISION.md) for the full design,
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for how it's built, and
