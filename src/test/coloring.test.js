@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { colorForTile, withAlpha } from "../core/coloring.js";
+import { colorForTile, orientationDegrees, withAlpha } from "../core/coloring.js";
 import { IDENTITY, rotation } from "../core/matrix.js";
 
 function tile(overrides = {}) {
@@ -45,6 +45,20 @@ describe("colorForTile", () => {
     for (const scheme of ["supertile", "generation", "orientation"]) {
       expect(colorForTile(tile(), scheme)).toMatch(/^hsl\(\d+(\.\d+)?, \d+%, \d+%\)$/);
     }
+  });
+});
+
+describe("orientationDegrees", () => {
+  it("is 0 for an untransformed tile", () => {
+    expect(orientationDegrees(IDENTITY)).toBeCloseTo(0);
+  });
+
+  it("reports a quarter turn as 90 degrees", () => {
+    expect(orientationDegrees(rotation(Math.PI / 2))).toBeCloseTo(90);
+  });
+
+  it("reports a negative rotation as a negative angle", () => {
+    expect(orientationDegrees(rotation(-Math.PI / 2))).toBeCloseTo(-90);
   });
 });
 
