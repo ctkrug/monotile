@@ -154,12 +154,18 @@ them.
     `#inspector-close` from 28px to 44px (its one violation) and widening the inspector `dl`'s
     padding to match.
 
-- [ ] **3.4 Static deploy readiness**
+- [x] **3.4 Static deploy readiness**
   - AC: `npm run build` produces a single self-contained `dist/` directory that runs correctly
     when served from a non-root subpath (e.g. `/monotile/`) — verified by building and serving
     locally from a subpath, not just the domain root.
+    ✅ `npm run build` emits `dist/` with every asset reference relative (`./assets/...`, no
+    leading slash). Verified by copying `dist/` to `<tmp>/monotile/`, serving it from a plain
+    static file server, and loading `/monotile/` in Playwright: canvas rendered, zero console
+    errors, zero failed requests.
   - AC: the landing content and the in-app UI use the exact same `docs/DESIGN.md` tokens (fonts,
     colors, radius) — no visual seam between "marketing page" and "app."
+    ✅ N/A by design, not a gap: Monotile has no separate marketing/landing page — `index.html`
+    *is* the app, so there's only ever one surface and it trivially can't seam against itself.
 
 - [ ] **3.5 Final design ship-gate pass**
   - AC: every D4 reject condition in `docs/DESIGN.md` is checked and false (no unstyled native
