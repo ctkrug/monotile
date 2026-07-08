@@ -373,8 +373,58 @@ body {
 
 @media (max-width: 480px) {
   .scheme-panel {
-    top: var(--space-3);
-    right: var(--space-3);
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0 var(--space-3) var(--space-3);
+    border-radius: var(--radius) var(--radius) 0 0;
+    max-height: 65vh;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    transform: translateY(calc(100% - 52px));
+    transition: transform var(--transition-ui);
+  }
+
+  .scheme-panel.sheet-open {
+    transform: translateY(0);
+  }
+
+  .sheet-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    flex: 0 0 52px;
+    margin: 0 calc(var(--space-3) * -1);
+    padding: 0 var(--space-3);
+    min-height: 44px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .sheet-handle-bar {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--text-muted);
+  }
+
+  .sheet-handle:hover,
+  .sheet-handle[aria-expanded="true"] {
+    color: var(--text);
+  }
+
+  .sheet-handle:hover .sheet-handle-bar,
+  .sheet-handle[aria-expanded="true"] .sheet-handle-bar {
+    background: var(--accent);
   }
 
   .scheme-btn {
@@ -413,7 +463,7 @@ body {
   .inspector-panel {
     left: var(--space-3);
     right: var(--space-3);
-    bottom: var(--space-3);
+    bottom: calc(52px + var(--space-3));
     min-width: 0;
   }
 
