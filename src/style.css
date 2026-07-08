@@ -159,6 +159,10 @@ body {
   display: none;
 }
 
+.rail-toggle {
+  display: none;
+}
+
 .scheme-btn {
   min-height: 44px;
   padding: var(--space-2) var(--space-4);
@@ -205,6 +209,42 @@ body {
 .export-btn:hover {
   color: var(--accent-support);
   background: rgba(255, 180, 84, 0.14);
+}
+
+@media (min-width: 481px) {
+  .rail-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: var(--space-1);
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color var(--transition-ui), color var(--transition-ui);
+  }
+
+  .rail-toggle:hover {
+    color: var(--text);
+    background: rgba(94, 200, 255, 0.1);
+  }
+
+  .rail-toggle:active {
+    transform: scale(0.94);
+  }
+
+  .scheme-panel.rail-collapsed {
+    padding: var(--space-2);
+  }
+
+  .scheme-panel.rail-collapsed .scheme-panel-body {
+    display: none;
+  }
 }
 
 .flash {
