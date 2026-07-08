@@ -24,18 +24,30 @@
       </header>
       <div class="canvas-wrap">
         <canvas id="tiling-canvas" aria-label="Infinite monotile pattern, draggable to pan"></canvas>
-        <div class="scheme-panel" role="group" aria-label="Coloring scheme">
-          <button type="button" class="scheme-btn" data-scheme="" aria-pressed="true">Line</button>
-          <button type="button" class="scheme-btn" data-scheme="supertile" aria-pressed="false">
-            Supertile
+        <div class="scheme-panel" id="scheme-panel" role="group" aria-label="Coloring scheme">
+          <button
+            type="button"
+            class="sheet-handle"
+            id="sheet-handle"
+            aria-expanded="false"
+            aria-controls="scheme-panel-body"
+          >
+            <span class="sheet-handle-bar" aria-hidden="true"></span>
+            Controls
           </button>
-          <button type="button" class="scheme-btn" data-scheme="generation" aria-pressed="false">
-            Generation
-          </button>
-          <button type="button" class="scheme-btn" data-scheme="orientation" aria-pressed="false">
-            Orientation
-          </button>
-          <button type="button" class="scheme-btn export-btn" id="export-btn">Export SVG</button>
+          <div class="scheme-panel-body" id="scheme-panel-body">
+            <button type="button" class="scheme-btn" data-scheme="" aria-pressed="true">Line</button>
+            <button type="button" class="scheme-btn" data-scheme="supertile" aria-pressed="false">
+              Supertile
+            </button>
+            <button type="button" class="scheme-btn" data-scheme="generation" aria-pressed="false">
+              Generation
+            </button>
+            <button type="button" class="scheme-btn" data-scheme="orientation" aria-pressed="false">
+              Orientation
+            </button>
+            <button type="button" class="scheme-btn export-btn" id="export-btn">Export SVG</button>
+          </div>
         </div>
         <div class="crosshair" id="crosshair" aria-hidden="true"></div>
         <div class="survey-readout" id="survey-readout" aria-hidden="true"></div>
