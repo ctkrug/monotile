@@ -6,6 +6,7 @@ import { findTileAt } from "./core/inspector.js";
 import { isResetKey, panStepForKey, zoomFactorForKey } from "./core/keyboardNav.js";
 import { DEFAULT_PALETTE, PALETTES } from "./core/palette.js";
 import { isPulseComplete, pulseIntensity } from "./core/pulse.js";
+import { nextRailExpanded, railToggleGlyph, railToggleLabel } from "./core/railToggle.js";
 import { draw } from "./core/renderer.js";
 import { createRipple, isRippleComplete, rippleColor } from "./core/ripple.js";
 import { buildSvg } from "./core/svgExport.js";
@@ -21,6 +22,7 @@ const toastEl = document.getElementById("toast");
 const muteToggle = document.getElementById("mute-toggle");
 const schemePanel = document.getElementById("scheme-panel");
 const sheetHandle = document.getElementById("sheet-handle");
+const railToggle = document.getElementById("rail-toggle");
 const crosshairEl = document.getElementById("crosshair");
 const surveyReadout = document.getElementById("survey-readout");
 const inspectorPanel = document.getElementById("inspector-panel");
@@ -49,6 +51,18 @@ syncMuteToggle();
 sheetHandle.addEventListener("click", () => {
   const open = schemePanel.classList.toggle("sheet-open");
   sheetHandle.setAttribute("aria-expanded", String(open));
+});
+
+// Desktop-only rail collapse: inert below 481px, where CSS keeps rail-toggle
+// hidden so the mobile sheet-handle is the only visible collapse control.
+let railExpanded = true;
+
+railToggle.addEventListener("click", () => {
+  railExpanded = nextRailExpanded(railExpanded);
+  railToggle.setAttribute("aria-expanded", String(railExpanded));
+  railToggle.setAttribute("aria-label", railToggleLabel(railExpanded));
+  railToggle.querySelector("span").textContent = railToggleGlyph(railExpanded);
+  schemePanel.classList.toggle("rail-collapsed", !railExpanded);
 });
 
 let camera = createCamera();
