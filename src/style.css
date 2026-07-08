@@ -27,6 +27,9 @@
   --shadow-panel: 0 8px 24px rgba(0, 0, 0, 0.35);
   --glow-focus: 0 0 0 3px rgba(94, 200, 255, 0.25);
   --transition-ui: 160ms ease-out;
+  /* --surface-2 (#16223c) at 85% opacity — the "translucent blueprint-panel
+     background" docs/DESIGN.md calls for on overlay controls. */
+  --panel-bg: rgba(22, 34, 60, 0.85);
 }
 
 * {
@@ -102,7 +105,65 @@ body {
   cursor: grabbing;
 }
 
+.scheme-panel {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  background: var(--panel-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-panel);
+}
+
+.scheme-btn {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-ui), color var(--transition-ui);
+}
+
+.scheme-btn:hover {
+  color: var(--text);
+  background: rgba(94, 200, 255, 0.1);
+}
+
+.scheme-btn:active {
+  transform: scale(0.97);
+}
+
+.scheme-btn:disabled {
+  color: var(--text-muted);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.scheme-btn[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+}
+
 @media (max-width: 480px) {
+  .scheme-panel {
+    top: var(--space-3);
+    right: var(--space-3);
+  }
+
+  .scheme-btn {
+    font-size: 0.72rem;
+    padding: var(--space-2) var(--space-3);
+  }
+
   .toolbar {
     flex-basis: 48px;
     padding: 0 var(--space-4);
