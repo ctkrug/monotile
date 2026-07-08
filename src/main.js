@@ -368,7 +368,9 @@ canvas.addEventListener("keydown", (event) => {
   }
 });
 
-const schemeButtons = [...document.querySelectorAll(".scheme-btn")];
+// [data-scheme] excludes export-btn: it shares the .scheme-btn class for
+// styling only, and must not trigger a scheme switch on click.
+const schemeButtons = [...document.querySelectorAll(".scheme-btn[data-scheme]")];
 schemeButtons.forEach((button) => {
   button.addEventListener("click", (event) => {
     const nextScheme = button.dataset.scheme;
