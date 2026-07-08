@@ -53,7 +53,22 @@ describe("spectre substitution rules", () => {
     const base = buildBaseSystem();
     for (const label of TILE_TYPES) {
       if (label === "Gamma") continue;
-      expect(base[label]).toEqual({ kind: "tile", label, quad: base[label].quad });
+      expect(base[label]).toEqual({
+        kind: "tile",
+        label,
+        quad: base[label].quad,
+        bbox: base[label].bbox,
+      });
+    }
+  });
+
+  it("gives every base tile the same real, non-empty bounding box", () => {
+    const base = buildBaseSystem();
+    for (const label of TILE_TYPES) {
+      if (label === "Gamma") continue;
+      const [minX, minY, maxX, maxY] = base[label].bbox;
+      expect(maxX).toBeGreaterThan(minX);
+      expect(maxY).toBeGreaterThan(minY);
     }
   });
 
