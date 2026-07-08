@@ -1,12 +1,19 @@
+import { playExportShutter, playRecolorChime } from "./core/audio.js";
 import { createCamera, panBy, screenToWorld, zoomAt } from "./core/camera.js";
+import { boundsIntersect, boundsOf } from "./core/geometry.js";
 import { DEFAULT_PALETTE, PALETTES } from "./core/palette.js";
 import { draw } from "./core/renderer.js";
 import { createRipple, isRippleComplete, rippleColor } from "./core/ripple.js";
+import { buildSvg } from "./core/svgExport.js";
 import { createTileField } from "./core/tileField.js";
 
 const canvas = document.getElementById("tiling-canvas");
 const ctx = canvas.getContext("2d");
 const zoomReadout = document.getElementById("zoom-readout");
+const exportBtn = document.getElementById("export-btn");
+const flashEl = document.getElementById("export-flash");
+const toastEl = document.getElementById("toast");
+let toastTimer = null;
 
 let camera = createCamera();
 let palette = PALETTES[DEFAULT_PALETTE];
@@ -27,17 +34,43 @@ function prefersReducedMotion() {
 // tiles that are already generated, instead of popping in at the edge.
 const CULL_MARGIN_RATIO = 0.5;
 
-function visibleTiles() {
+function viewportBounds() {
   const topLeft = screenToWorld(camera, { x: 0, y: 0 });
   const bottomRight = screenToWorld(camera, { x: size.width, y: size.height });
-  const bounds = [
+  return [
     Math.min(topLeft.x, bottomRight.x),
     Math.min(topLeft.y, bottomRight.y),
     Math.max(topLeft.x, bottomRight.x),
     Math.max(topLeft.y, bottomRight.y),
   ];
+}
+
+function visibleTiles() {
+  const bounds = viewportBounds();
   const margin = (bounds[2] - bounds[0]) * CULL_MARGIN_RATIO;
   return tileField.update(bounds, margin).tiles;
+}
+
+function triggerDownload(filename, content, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function showExportFeedback(filename) {
+  if (!prefersReducedMotion()) {
+    flashEl.classList.remove("flash-active");
+    void flashEl.offsetWidth; // restart the keyframe animation
+    flashEl.classList.add("flash-active");
+  }
+  toastEl.textContent = `Exported ${filename}`;
+  toastEl.classList.add("toast-visible");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove("toast-visible"), 2200);
 }
 
 function resize() {
@@ -114,6 +147,7 @@ schemeButtons.forEach((button) => {
     const nextScheme = button.dataset.scheme;
     if (nextScheme === scheme) return;
     schemeButtons.forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
+    playRecolorChime();
 
     if (prefersReducedMotion()) {
       scheme = nextScheme;
@@ -138,6 +172,16 @@ schemeButtons.forEach((button) => {
     rippleStartTime = performance.now();
     requestAnimationFrame(tickRipple);
   });
+});
+
+exportBtn.addEventListener("click", () => {
+  const bounds = viewportBounds();
+  const tiles = visibleTiles().filter((tile) => boundsIntersect(boundsOf(tile.points), bounds));
+  const svg = buildSvg(tiles, palette, scheme, bounds);
+  const filename = "monotile-export.svg";
+  triggerDownload(filename, svg, "image/svg+xml");
+  showExportFeedback(filename);
+  playExportShutter();
 });
 
 window.addEventListener("resize", resize);
