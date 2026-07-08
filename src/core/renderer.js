@@ -3,16 +3,37 @@ import { worldToScreen } from "./camera.js";
 const GRID_SPACING = 48; // world units between graph-paper lines
 
 /**
- * Placeholder render pass: draws the blueprint grid panned/zoomed by the
- * camera. Proves the render pipeline end to end; the real hat/spectre
- * substitution tiling replaces the grid in BUILD (see docs/BACKLOG.md).
+ * Draws the faint blueprint grid, then the visible spectre tiles, all
+ * panned/zoomed by the camera. `tiles` is the array returned by a
+ * `TileField#update()` call — each tile's `points` are already in world
+ * space, so only the camera's world-to-screen mapping is applied here.
  */
-export function draw(ctx, camera, size, palette) {
+export function draw(ctx, camera, size, palette, tiles = []) {
   const { width, height } = size;
 
   ctx.fillStyle = palette.background;
   ctx.fillRect(0, 0, width, height);
   drawGrid(ctx, camera, size, palette);
+  drawTiles(ctx, camera, palette, tiles);
+}
+
+function drawTiles(ctx, camera, palette, tiles) {
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = palette.tile;
+  ctx.fillStyle = `${palette.tile}1a`; // ~10% opacity fill, keeps outlines primary
+
+  for (const tile of tiles) {
+    const screenPoints = tile.points.map((p) => worldToScreen(camera, p));
+    ctx.beginPath();
+    ctx.moveTo(screenPoints[0].x, screenPoints[0].y);
+    for (let i = 1; i < screenPoints.length; i++) {
+      ctx.lineTo(screenPoints[i].x, screenPoints[i].y);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
 }
 
 function drawGrid(ctx, camera, size, palette) {
