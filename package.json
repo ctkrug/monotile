@@ -1,0 +1,19 @@
+{
+  "name": "monotile",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "An interactive studio for the 2023 einstein hat/spectre aperiodic monotile.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^9.9.1",
+    "vite": "^5.4.6",
+    "vitest": "^2.1.1"
+  }
+}
