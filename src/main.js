@@ -12,6 +12,7 @@ let palette = PALETTES[DEFAULT_PALETTE];
 let size = { width: 0, height: 0 };
 let dragging = false;
 let lastPointer = { x: 0, y: 0 };
+let scheme = "";
 
 const tileField = createTileField();
 
@@ -43,7 +44,7 @@ function resize() {
 }
 
 function render() {
-  draw(ctx, camera, size, palette, visibleTiles());
+  draw(ctx, camera, size, palette, visibleTiles(), scheme);
   zoomReadout.textContent = `zoom ${camera.zoom.toFixed(2)}×`;
 }
 
@@ -85,6 +86,15 @@ canvas.addEventListener(
   },
   { passive: false },
 );
+
+const schemeButtons = [...document.querySelectorAll(".scheme-btn")];
+schemeButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    scheme = button.dataset.scheme;
+    schemeButtons.forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
+    render();
+  });
+});
 
 window.addEventListener("resize", resize);
 resize();
