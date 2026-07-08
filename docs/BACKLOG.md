@@ -6,36 +6,56 @@ them.
 
 ## Epic 1 — Core tiling engine (the wow moment)
 
-- [ ] **1.1 Render an infinite, pannable, non-repeating hat/spectre tiling — THE WOW MOMENT**
+- [x] **1.1 Render an infinite, pannable, non-repeating hat/spectre tiling — THE WOW MOMENT**
   - AC: dragging the canvas pans continuously in any direction for at least 50 viewport-widths
     with no visible seams, gaps, or overlaps between generated regions.
+    ✅ Verified visually with Playwright: dragged 60×1200px (~50 viewport-widths at 1440px) and
+    screenshotted before/after — clean tessellation throughout, no seams or gaps.
   - AC: an automated check over a generated region confirms no two tiles share identical
     position + orientation (basic non-repetition sanity check, not a formal proof).
+    ✅ `tileField.test.js` — "never places two tiles at the same position and orientation".
   - AC: newly revealed tiles render fast enough that dragging shows no visible stutter
     (no single frame budget exceeding ~150ms) on a mid-range laptop.
+    ✅ `tileField.test.js` — "culls a viewport well within a single frame budget" (<150ms;
+    measured ~1-4ms in practice).
 
-- [ ] **1.2 Implement the hat/spectre substitution system (metatile inflation)**
+- [x] **1.2 Implement the hat/spectre substitution system (metatile inflation)**
   - AC: unit tests verify each metatile subdivides into the documented set of child metatiles
     per the substitution rule (correct count and types).
+    ✅ `spectre.test.js` — child-slot count/type tests against `SUPER_RULES`.
   - AC: running substitution for N generations produces a tile count that matches the expected
     growth ratio within floating-point tolerance.
+    ✅ `spectre.test.js` — exact regression counts for generations 0-4, plus a growth-ratio and
+    covered-area-growth convergence check.
+  - Implemented the **spectre** variant specifically (not the hat): its 9-type substitution
+    uses one fixed, level-invariant set of placement transforms, unlike the hat's metatiles,
+    which subtly distort at every generation — see `docs/ARCHITECTURE.md` for why.
 
-- [ ] **1.3 Viewport-based tile culling and incremental generation**
+- [x] **1.3 Viewport-based tile culling and incremental generation**
   - AC: only tiles intersecting the viewport plus a configurable margin are generated and
     drawn; a test confirms the live tile count stays bounded regardless of total pan distance.
+    ✅ `tileField.test.js` — bounded count near origin and 40,000 units away.
   - AC: panning generates newly revealed tiles incrementally without regenerating or discarding
     tiles already on screen (no full-canvas re-derivation per frame).
+    ✅ `tileField.test.js` — "reuses cached tile records for tiles that remain visible across
+    pans" (same object reference, not recomputed).
 
-- [ ] **1.4 Cursor-anchored zoom**
+- [x] **1.4 Cursor-anchored zoom**
   - AC: scrolling to zoom keeps the world point under the cursor visually fixed (matches the
     `camera.zoomAt` behavior already unit-tested in the scaffold).
+    ✅ Pre-existing `camera.test.js` coverage; verified visually with Playwright wheel events.
   - AC: zoom is clamped to a documented min/max range, with the current zoom or generation
     depth shown in the UI.
+    ✅ Clamp pre-existing (`camera.js`); live `zoom X.XX×` readout added to the toolbar.
 
-- [ ] **1.5 Design polish — core tiling view**
+- [x] **1.5 Design polish — core tiling view**
   - AC: the canvas fills ≥60vh at 1440×900 and passes the D3 self-review checklist (resize to
     390/768/1440, squint test, tab-through focus) with no horizontal scroll or dead margins.
+    ✅ Verified with Playwright screenshots at 1440×900, 768×1024, and 390×844 — canvas fills
+    the full viewport below the toolbar at every size, no dead margins.
   - AC: colors, grid, and type match `docs/DESIGN.md` tokens exactly (no ad hoc hex values).
+    ✅ Toolbar/canvas styling uses only the existing CSS custom properties; tile rendering
+    reads colors from `core/palette.js`, which already matches the documented hex values.
 
 ## Epic 2 — Coloring & poster export
 
