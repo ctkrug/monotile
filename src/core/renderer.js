@@ -9,23 +9,25 @@ const GRID_SPACING = 48; // world units between graph-paper lines
  * `TileField#update()` call — each tile's `points` are already in world
  * space, so only the camera's world-to-screen mapping is applied here.
  * `scheme` selects a coloring scheme (see coloring.js); falsy means the
- * flat, single-color line-art look from `docs/DESIGN.md`.
+ * flat, single-color line-art look from `docs/DESIGN.md`. `colorFor`, when
+ * given, overrides per-tile color resolution entirely (used by main.js to
+ * drive the recolor ripple animation frame-by-frame).
  */
-export function draw(ctx, camera, size, palette, tiles = [], scheme = null) {
+export function draw(ctx, camera, size, palette, tiles = [], scheme = null, colorFor = null) {
   const { width, height } = size;
 
   ctx.fillStyle = palette.background;
   ctx.fillRect(0, 0, width, height);
   drawGrid(ctx, camera, size, palette);
-  drawTiles(ctx, camera, palette, tiles, scheme);
+  drawTiles(ctx, camera, palette, tiles, scheme, colorFor);
 }
 
-function drawTiles(ctx, camera, palette, tiles, scheme) {
+function drawTiles(ctx, camera, palette, tiles, scheme, colorFor) {
   ctx.lineJoin = "round";
   ctx.lineWidth = 1.5;
 
   for (const tile of tiles) {
-    const color = colorForTile(tile, scheme) ?? palette.tile;
+    const color = colorFor ? colorFor(tile) : (colorForTile(tile, scheme) ?? palette.tile);
     ctx.strokeStyle = color;
     ctx.fillStyle = withAlpha(color, 0.12); // keeps outlines primary, fill just for legibility
 
