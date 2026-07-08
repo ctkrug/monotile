@@ -217,7 +217,6 @@ const CLICK_DRAG_THRESHOLD = 4;
 canvas.addEventListener("pointerdown", (event) => {
   const pos = pointerPos(event);
   activePointers.set(event.pointerId, pos);
-  canvas.setPointerCapture(event.pointerId);
 
   if (activePointers.size === 2) {
     gestureMode = "pinch";
@@ -231,6 +230,11 @@ canvas.addEventListener("pointerdown", (event) => {
     lastPointer = pos;
     pointerDownPos = pos;
   }
+
+  // Capture last: a bookkeeping update above should never be skipped by an
+  // exception this call can throw for a pointer id the browser doesn't
+  // recognize as active.
+  canvas.setPointerCapture(event.pointerId);
 });
 
 canvas.addEventListener("pointermove", (event) => {
