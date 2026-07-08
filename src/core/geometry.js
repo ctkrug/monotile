@@ -54,3 +54,24 @@ export function expandBounds([minX, minY, maxX, maxY], margin) {
 export function boundsIntersect(a, b) {
   return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
 }
+
+/**
+ * Ray-casting point-in-polygon test for the tile inspector's hit-testing.
+ * `polygon` is a closed-implied list of {x, y} points (no need to repeat
+ * the first point at the end). Edge behavior is unspecified, as usual for
+ * this algorithm — only interior/exterior classification is guaranteed.
+ */
+export function pointInPolygon(point, polygon) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+    const crosses =
+      yi > point.y !== yj > point.y &&
+      point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
+    if (crosses) inside = !inside;
+  }
+  return inside;
+}
