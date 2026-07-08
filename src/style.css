@@ -293,6 +293,53 @@ body {
   transform: translate(-50%, 0);
 }
 
+.pan-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  border: 1px dashed rgba(94, 200, 255, 0.4);
+  border-radius: var(--radius);
+  background: rgba(16, 27, 48, 0.72);
+  backdrop-filter: blur(2px);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 1;
+  transition: opacity 400ms ease-out;
+}
+
+.pan-hint-dismissed {
+  opacity: 0;
+}
+
+.pan-hint-arrow {
+  color: var(--accent);
+  animation: pan-hint-drift 1400ms ease-in-out infinite;
+}
+
+.pan-hint-arrow:last-child {
+  animation-direction: reverse;
+}
+
+@keyframes pan-hint-drift {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-4px);
+  }
+}
+
 .crosshair {
   position: absolute;
   top: 0;
