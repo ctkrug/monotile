@@ -3,6 +3,7 @@ import { createCamera, panBy, screenToWorld, zoomAt } from "./core/camera.js";
 import { orientationDegrees } from "./core/coloring.js";
 import { boundsIntersect, boundsOf } from "./core/geometry.js";
 import { findTileAt } from "./core/inspector.js";
+import { isResetKey, panStepForKey, zoomFactorForKey } from "./core/keyboardNav.js";
 import { DEFAULT_PALETTE, PALETTES } from "./core/palette.js";
 import { isPulseComplete, pulseIntensity } from "./core/pulse.js";
 import { draw } from "./core/renderer.js";
@@ -309,6 +310,30 @@ canvas.addEventListener(
   },
   { passive: false },
 );
+
+canvas.addEventListener("keydown", (event) => {
+  if (isResetKey(event.key)) {
+    event.preventDefault();
+    camera = createCamera();
+    render();
+    return;
+  }
+
+  const panStep = panStepForKey(event.key, { shiftKey: event.shiftKey });
+  if (panStep) {
+    event.preventDefault();
+    camera = panBy(camera, panStep);
+    render();
+    return;
+  }
+
+  const zoomFactor = zoomFactorForKey(event.key);
+  if (zoomFactor) {
+    event.preventDefault();
+    camera = zoomAt(camera, { x: size.width / 2, y: size.height / 2 }, zoomFactor);
+    render();
+  }
+});
 
 const schemeButtons = [...document.querySelectorAll(".scheme-btn")];
 schemeButtons.forEach((button) => {
