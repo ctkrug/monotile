@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { add, boundsOf, length, rotate, scale, subtract } from "../core/geometry.js";
+import {
+  add,
+  boundsIntersect,
+  boundsOf,
+  expandBounds,
+  length,
+  rotate,
+  scale,
+  subtract,
+} from "../core/geometry.js";
 
 describe("geometry", () => {
   it("adds and subtracts points", () => {
@@ -28,5 +37,22 @@ describe("geometry", () => {
       { x: -1, y: 4 },
     ]);
     expect(bounds).toEqual([-1, 0, 5, 4]);
+  });
+
+  it("expands a bounding box by a margin on every side", () => {
+    expect(expandBounds([0, 0, 5, 4], 2)).toEqual([-2, -2, 7, 6]);
+  });
+
+  it("shrinks a bounding box with a negative margin", () => {
+    expect(expandBounds([0, 0, 5, 4], -1)).toEqual([1, 1, 4, 3]);
+  });
+
+  it("detects overlapping bounding boxes, including edge-touching", () => {
+    expect(boundsIntersect([0, 0, 5, 5], [4, 4, 10, 10])).toBe(true);
+    expect(boundsIntersect([0, 0, 5, 5], [5, 5, 10, 10])).toBe(true);
+  });
+
+  it("detects non-overlapping bounding boxes", () => {
+    expect(boundsIntersect([0, 0, 5, 5], [6, 6, 10, 10])).toBe(false);
   });
 });
