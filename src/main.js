@@ -9,6 +9,7 @@ import { draw } from "./core/renderer.js";
 import { createRipple, isRippleComplete, rippleColor } from "./core/ripple.js";
 import { buildSvg } from "./core/svgExport.js";
 import { createTileField } from "./core/tileField.js";
+import { pinchState } from "./core/touch.js";
 
 const canvas = document.getElementById("tiling-canvas");
 const ctx = canvas.getContext("2d");
