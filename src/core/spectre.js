@@ -8,6 +8,7 @@
 // placement (rotation/reflection + translation) ever changes.
 
 import { applyMatrix, IDENTITY, multiply, rotation, translation, translationBetween } from "./matrix.js";
+import { boundsOf } from "./geometry.js";
 
 const SQRT3 = Math.sqrt(3);
 
@@ -33,6 +34,33 @@ export const SPECTRE_POINTS = [
 // generation's supertiles.
 const QUAD_INDICES = [3, 5, 7, 11];
 const BASE_QUAD = QUAD_INDICES.map((i) => SPECTRE_POINTS[i]);
+
+// The quad is only 4 alignment points, not a hull of the tile's silhouette —
+// it under/overshoots the real outline, and that error compounds every
+// generation. Every node instead carries an axis-aligned `bbox` in its own
+// local frame, built bottom-up from real tile geometry, for safe viewport
+// culling (see tileField.js).
+const BASE_TILE_BBOX = boundsOf(SPECTRE_POINTS);
+
+function boxCorners([minX, minY, maxX, maxY]) {
+  return [
+    { x: minX, y: minY },
+    { x: maxX, y: minY },
+    { x: maxX, y: maxY },
+    { x: minX, y: maxY },
+  ];
+}
+
+function unionBounds(a, b) {
+  return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])];
+}
+
+function boundsOfChildren(children) {
+  return children.reduce((acc, { shape, transform }) => {
+    const box = boundsOf(boxCorners(shape.bbox).map((p) => applyMatrix(transform, p)));
+    return acc ? unionBounds(acc, box) : box;
+  }, null);
+}
 
 export const TILE_TYPES = [
   "Gamma",
@@ -90,19 +118,21 @@ export function buildBaseSystem() {
   const system = {};
   for (const label of TILE_TYPES) {
     if (label === "Gamma") continue;
-    system[label] = { kind: "tile", label, quad: BASE_QUAD };
+    system[label] = { kind: "tile", label, quad: BASE_QUAD, bbox: BASE_TILE_BBOX };
   }
+  const children = [
+    { shape: { kind: "tile", label: "Gamma1", quad: BASE_QUAD, bbox: BASE_TILE_BBOX }, transform: IDENTITY },
+    {
+      shape: { kind: "tile", label: "Gamma2", quad: BASE_QUAD, bbox: BASE_TILE_BBOX },
+      transform: multiply(translation(SPECTRE_POINTS[8].x, SPECTRE_POINTS[8].y), rotation(Math.PI / 6)),
+    },
+  ];
   system.Gamma = {
     kind: "composite",
     label: "Gamma",
     quad: BASE_QUAD,
-    children: [
-      { shape: { kind: "tile", label: "Gamma1", quad: BASE_QUAD }, transform: IDENTITY },
-      {
-        shape: { kind: "tile", label: "Gamma2", quad: BASE_QUAD },
-        transform: multiply(translation(SPECTRE_POINTS[8].x, SPECTRE_POINTS[8].y), rotation(Math.PI / 6)),
-      },
-    ],
+    bbox: boundsOfChildren(children),
+    children,
   };
   return system;
 }
@@ -146,7 +176,7 @@ export function buildNextGeneration(system) {
     const children = substitutions
       .map((childLabel, i) => (childLabel ? { shape: system[childLabel], transform: transforms[i] } : null))
       .filter(Boolean);
-    next[label] = { kind: "composite", label, quad: superQuad, children };
+    next[label] = { kind: "composite", label, quad: superQuad, bbox: boundsOfChildren(children), children };
   }
   return next;
 }
