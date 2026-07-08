@@ -1,4 +1,4 @@
-import { playExportShutter, playRecolorChime } from "./core/audio.js";
+import { isMuted, playExportShutter, playRecolorChime, setMuted } from "./core/audio.js";
 import { createCamera, panBy, screenToWorld, zoomAt } from "./core/camera.js";
 import { boundsIntersect, boundsOf } from "./core/geometry.js";
 import { DEFAULT_PALETTE, PALETTES } from "./core/palette.js";
@@ -13,7 +13,21 @@ const zoomReadout = document.getElementById("zoom-readout");
 const exportBtn = document.getElementById("export-btn");
 const flashEl = document.getElementById("export-flash");
 const toastEl = document.getElementById("toast");
+const muteToggle = document.getElementById("mute-toggle");
 let toastTimer = null;
+
+function syncMuteToggle() {
+  const muted = isMuted();
+  muteToggle.textContent = `Sound: ${muted ? "Off" : "On"}`;
+  muteToggle.setAttribute("aria-pressed", String(muted));
+}
+
+muteToggle.addEventListener("click", () => {
+  setMuted(!isMuted());
+  syncMuteToggle();
+});
+
+syncMuteToggle();
 
 let camera = createCamera();
 let palette = PALETTES[DEFAULT_PALETTE];
