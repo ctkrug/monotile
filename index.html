@@ -15,7 +15,12 @@
     <div id="app">
       <header class="toolbar">
         <span class="wordmark">Monotile<span class="wordmark-dot">.</span></span>
-        <span class="readout" id="zoom-readout" role="status">zoom 1.00&times;</span>
+        <div class="toolbar-right">
+          <span class="readout" id="zoom-readout" role="status">zoom 1.00&times;</span>
+          <button type="button" class="icon-btn" id="mute-toggle" aria-pressed="false">
+            Sound: On
+          </button>
+        </div>
       </header>
       <div class="canvas-wrap">
         <canvas id="tiling-canvas" aria-label="Infinite monotile pattern, draggable to pan"></canvas>
@@ -30,8 +35,11 @@
           <button type="button" class="scheme-btn" data-scheme="orientation" aria-pressed="false">
             Orientation
           </button>
+          <button type="button" class="scheme-btn export-btn" id="export-btn">Export SVG</button>
         </div>
       </div>
+      <div class="flash" id="export-flash" aria-hidden="true"></div>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </div>
     <script type="module" src="./src/main.js"></script>
   </body>
