@@ -18,6 +18,8 @@ const exportBtn = document.getElementById("export-btn");
 const flashEl = document.getElementById("export-flash");
 const toastEl = document.getElementById("toast");
 const muteToggle = document.getElementById("mute-toggle");
+const schemePanel = document.getElementById("scheme-panel");
+const sheetHandle = document.getElementById("sheet-handle");
 const crosshairEl = document.getElementById("crosshair");
 const surveyReadout = document.getElementById("survey-readout");
 const inspectorPanel = document.getElementById("inspector-panel");
@@ -40,6 +42,13 @@ muteToggle.addEventListener("click", () => {
 });
 
 syncMuteToggle();
+
+// Mobile-only bottom sheet: inert at desktop widths where CSS never applies
+// the collapsed transform, so this toggle is harmless to leave wired up.
+sheetHandle.addEventListener("click", () => {
+  const open = schemePanel.classList.toggle("sheet-open");
+  sheetHandle.setAttribute("aria-expanded", String(open));
+});
 
 let camera = createCamera();
 let palette = PALETTES[DEFAULT_PALETTE];
