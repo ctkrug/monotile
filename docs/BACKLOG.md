@@ -191,12 +191,17 @@ them.
     `aria-expanded` flips true/false, the 44×44px button is focusable, and the previously
     selected scheme ("Line") is still shown pressed after re-expanding.
 
-- [ ] **3.8 First-visit pan hint**
+- [x] **3.8 First-visit pan hint**
   - AC: on a visitor's first load, a themed callout invites them to drag/pan the canvas; it
     disappears the first time they pan, zoom, or use a keyboard shortcut, and never reappears on
     later visits (persisted via `localStorage`).
+    ✅ `hint.test.js` covers the persisted-dismissal logic; verified with Playwright — visible on
+    first load, faded out after a drag, still gone after a reload.
   - AC: the hint respects `prefers-reduced-motion` (no bounce/pulse animation, just a static
     callout) and doesn't block any pointer/keyboard interaction with the canvas underneath it.
+    ✅ The drift keyframe is neutralized by the existing global `prefers-reduced-motion`
+    override; `pointer-events: none` on `.pan-hint` means it never intercepts the canvas's own
+    gesture handlers.
 
 - [ ] **3.9 Shareable view link**
   - AC: a "Copy link" control encodes the current camera (pan + zoom) and coloring scheme into
