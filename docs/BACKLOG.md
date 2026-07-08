@@ -167,6 +167,20 @@ them.
     ✅ N/A by design, not a gap: Monotile has no separate marketing/landing page — `index.html`
     *is* the app, so there's only ever one surface and it trivially can't seam against itself.
 
+- [ ] **3.6 Keyboard-operable canvas pan/zoom**
+  - AC: with the canvas focused, arrow keys pan the view (a larger step with Shift held) and
+    `+`/`-` zoom in/out, each producing the same immediate visual change as the equivalent
+    drag/wheel gesture.
+  - AC: the canvas is reachable via Tab and shows the same `:focus-visible` treatment as every
+    other control; `Home` resets pan and zoom to the initial view.
+
+- [ ] **3.7 Collapsible desktop control rail**
+  - AC: on desktop widths, a toggle collapses the scheme panel to a slim docked tab (mirroring
+    `docs/DESIGN.md`'s "collapsible to a slim icon rail" layout intent, left as a known gap by
+    story 2.1) without the canvas ever resizing to make room for it.
+  - AC: the collapsed tab is reachable via keyboard and screen readers (`aria-expanded`, a
+    ≥44px touch target) and re-expands to the exact prior panel state.
+
 - [ ] **3.5 Final design ship-gate pass**
   - AC: every D4 reject condition in `docs/DESIGN.md` is checked and false (no unstyled native
     controls, has a real favicon, has background depth/atmosphere, hero isn't a small box in
