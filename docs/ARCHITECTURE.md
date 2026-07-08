@@ -45,6 +45,11 @@ src/
     pulse.js       The pinned-tile outline pulse: pulseIntensity(elapsedMs) is pure and
                    time-injected like ripple.js — 2 bright 140ms pulses, then it settles at a low
                    steady intensity so a pin stays visible without staying loud indefinitely.
+    touch.js       pinchState(pointA, pointB) — distance + midpoint between two active touch
+                   points, the two inputs a pinch-to-zoom gesture needs. Pure and DOM-free like
+                   ripple.js/pulse.js, so the gesture math is unit-tested without a browser;
+                   main.js compares distance across moves to derive a zoom factor for
+                   camera.zoomAt and uses the midpoint as its anchor point.
     renderer.js    Canvas draw pass: background, grid, then every visible tile as a stroked,
                    lightly-filled polygon (via the shared tracePolygon() helper). Colors come
                    from coloring.js via a scheme name, or from an optional per-tile
@@ -57,13 +62,21 @@ src/
                    export button (svgExport.js + a Blob download + flash/toast feedback), the
                    mute toggle (audio.js), and the tile inspector (inspector.js + pulse.js —
                    every pointermove updates the crosshair/readout, and a non-drag click pins a
-                   tile); re-renders on every change.
+                   tile); re-renders on every change. Pointer handling tracks every active
+                   pointer in a Map so a second touch promotes a single-finger pan into a
+                   two-finger pinch-zoom (touch.js + camera.zoomAt) mid-gesture; losing a finger
+                   mid-pinch resets the gesture rather than resuming a pan. Also wires the
+                   mobile-only sheet-handle tap to expand/collapse the scheme panel.
   style.css        Design tokens (see docs/DESIGN.md) as CSS custom properties, toolbar/canvas/
                    scheme-panel layout, plus the export button, mute toggle, camera-flash
-                   overlay, toast, crosshair, survey readout, and inspector panel styling.
+                   overlay, toast, crosshair, survey readout, and inspector panel styling. Below
+                   480px the scheme panel becomes a bottom sheet (translateY to just its handle's
+                   height by default, `.sheet-open` reveals it) so the canvas keeps most of the
+                   viewport on phones.
 index.html         Toolbar (wordmark, live zoom readout, mute toggle), the canvas, the
-                   coloring-scheme picker panel (with the export button), the crosshair/survey
-                   readout, the tile inspector panel, and the flash/toast feedback elements.
+                   coloring-scheme picker panel (drag handle + body with the scheme buttons and
+                   export button), the crosshair/survey readout, the tile inspector panel, and
+                   the flash/toast feedback elements.
 ```
 
 ## The substitution engine, and why it's the *spectre* not the *hat*
