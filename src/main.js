@@ -13,11 +13,13 @@ import { createRipple, isRippleComplete, rippleColor } from "./core/ripple.js";
 import { buildSvg } from "./core/svgExport.js";
 import { createTileField } from "./core/tileField.js";
 import { pinchState } from "./core/touch.js";
+import { decodeViewHash, encodeViewHash } from "./core/viewLink.js";
 
 const canvas = document.getElementById("tiling-canvas");
 const ctx = canvas.getContext("2d");
 const zoomReadout = document.getElementById("zoom-readout");
 const exportBtn = document.getElementById("export-btn");
+const shareBtn = document.getElementById("share-btn");
 const flashEl = document.getElementById("export-flash");
 const toastEl = document.getElementById("toast");
 const muteToggle = document.getElementById("mute-toggle");
@@ -405,6 +407,26 @@ schemeButtons.forEach((button) => {
     rippleStartTime = performance.now();
     requestAnimationFrame(tickRipple);
   });
+});
+
+// A valid #x=..&y=..&z=..[&scheme=..] hash (from a previously copied share
+// link) restores that exact view; anything empty/malformed/unrecognized
+// falls back to the default view decodeViewHash already returns null for.
+const restoredView = decodeViewHash(window.location.hash);
+if (restoredView) {
+  camera = restoredView.camera;
+  scheme = restoredView.scheme;
+  schemeButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.scheme === scheme)));
+}
+
+shareBtn.addEventListener("click", async () => {
+  window.location.hash = encodeViewHash(camera, scheme);
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    showToast("Link copied");
+  } catch {
+    showToast("Link updated — copy it from the address bar");
+  }
 });
 
 exportBtn.addEventListener("click", () => {
