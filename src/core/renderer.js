@@ -1,4 +1,5 @@
 import { worldToScreen } from "./camera.js";
+import { colorForTile, withAlpha } from "./coloring.js";
 
 const GRID_SPACING = 48; // world units between graph-paper lines
 
@@ -7,23 +8,27 @@ const GRID_SPACING = 48; // world units between graph-paper lines
  * panned/zoomed by the camera. `tiles` is the array returned by a
  * `TileField#update()` call — each tile's `points` are already in world
  * space, so only the camera's world-to-screen mapping is applied here.
+ * `scheme` selects a coloring scheme (see coloring.js); falsy means the
+ * flat, single-color line-art look from `docs/DESIGN.md`.
  */
-export function draw(ctx, camera, size, palette, tiles = []) {
+export function draw(ctx, camera, size, palette, tiles = [], scheme = null) {
   const { width, height } = size;
 
   ctx.fillStyle = palette.background;
   ctx.fillRect(0, 0, width, height);
   drawGrid(ctx, camera, size, palette);
-  drawTiles(ctx, camera, palette, tiles);
+  drawTiles(ctx, camera, palette, tiles, scheme);
 }
 
-function drawTiles(ctx, camera, palette, tiles) {
+function drawTiles(ctx, camera, palette, tiles, scheme) {
   ctx.lineJoin = "round";
   ctx.lineWidth = 1.5;
-  ctx.strokeStyle = palette.tile;
-  ctx.fillStyle = `${palette.tile}1a`; // ~10% opacity fill, keeps outlines primary
 
   for (const tile of tiles) {
+    const color = colorForTile(tile, scheme) ?? palette.tile;
+    ctx.strokeStyle = color;
+    ctx.fillStyle = withAlpha(color, 0.12); // keeps outlines primary, fill just for legibility
+
     const screenPoints = tile.points.map((p) => worldToScreen(camera, p));
     ctx.beginPath();
     ctx.moveTo(screenPoints[0].x, screenPoints[0].y);
