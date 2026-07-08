@@ -59,11 +59,17 @@ them.
 
 ## Epic 2 — Coloring & poster export
 
-- [ ] **2.1 Implement three coloring schemes (orientation, generation, supertile)**
+- [x] **2.1 Implement three coloring schemes (orientation, generation, supertile)**
   - AC: switching schemes recolors all visible tiles without a page reload; the same tile
     resolves to a visibly different color under each scheme.
+    ✅ `coloring.test.js` (determinism + variety) plus visual verification (Playwright
+    screenshots of all four states: Line/Supertile/Generation/Orientation).
   - AC: the palette picker exposes all three per `docs/DESIGN.md`, and every control (swatch,
     select) has themed hover, focus-visible, and active states — no naked native widgets.
+    ✅ `.scheme-btn` styles cover hover/active/disabled/pressed/focus-visible.
+  - Note: the panel is a fixed overlay, not yet collapsible to an icon rail as
+    `docs/DESIGN.md`'s layout intent describes — left for a follow-up design pass since the
+    fixed panel doesn't yet crowd the canvas at any tested breakpoint (390/768/1440).
 
 - [ ] **2.2 Recolor ripple transition**
   - AC: clicking a swatch cross-fades tile colors over ~250ms, staggered outward from the click
