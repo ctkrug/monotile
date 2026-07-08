@@ -20,6 +20,8 @@ export default [
         webkitAudioContext: "readonly",
         setTimeout: "readonly",
         clearTimeout: "readonly",
+        URLSearchParams: "readonly",
+        navigator: "readonly",
       },
     },
   },
