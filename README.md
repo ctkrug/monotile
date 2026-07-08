@@ -1,5 +1,7 @@
 # Monotile
 
+[![CI](https://github.com/ctkrug/monotile/actions/workflows/ci.yml/badge.svg)](https://github.com/ctkrug/monotile/actions/workflows/ci.yml)
+
 An interactive studio for the 2023 **einstein** discovery — the "hat" and "spectre" tiles,
 the first shapes ever found that tile the infinite plane using only one shape, with no
 mirror image, and *never* repeating.
