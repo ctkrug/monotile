@@ -114,12 +114,18 @@ them.
 
 ## Epic 3 — Inspector, access & ship
 
-- [ ] **3.1 Tile inspector with live survey readout**
+- [x] **3.1 Tile inspector with live survey readout**
   - AC: moving the pointer over the canvas shows a crosshair plus a monospace label
     (coordinate, generation, tile type) following the cursor, per the `docs/DESIGN.md`
     signature detail.
+    ✅ Verified with Playwright: hovering shows `x: 400, y: 344 · gen 12 · Delta`, tracking the
+    cursor; hidden again on `pointerleave`.
   - AC: clicking a tile pins an inspector panel showing its type, orientation, and supertile
     lineage, with the pulse-outline confirmation from the juice plan.
+    ✅ Verified with Playwright: click-to-pin (vs. a pan drag) is distinguished by a 4px move
+    threshold; the panel showed type/generation/orientation/lineage for the clicked tile, and
+    `pulse.js`'s 2×140ms pulse settles into a steady outline. Covered by `pulse.test.js` and
+    `inspector.test.js`.
 
 - [ ] **3.2 Touch and mobile controls**
   - AC: a single-finger drag pans and a pinch gesture zooms on a touch device (or emulated
