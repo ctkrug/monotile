@@ -56,6 +56,8 @@ src/
     railToggle.js  nextRailExpanded/railToggleLabel/railToggleGlyph — pure expand/collapse state
                    for the desktop control-rail toggle (aria-label + glyph per state), unit-tested
                    without a DOM like keyboardNav.js/touch.js.
+    hint.js        hasSeenHint/markHintSeen — persisted dismissal for the first-visit pan-hint
+                   callout, same localStorage-with-safe-fallback pattern as audio.js's mute flag.
     renderer.js    Canvas draw pass: background, grid, then every visible tile as a stroked,
                    lightly-filled polygon (via the shared tracePolygon() helper). Colors come
                    from coloring.js via a scheme name, or from an optional per-tile
@@ -74,8 +76,9 @@ src/
                    mid-pinch resets the gesture rather than resuming a pan. Also wires the
                    mobile-only sheet-handle tap to expand/collapse the scheme panel, the
                    desktop-only rail-toggle tap to collapse it to a slim docked tab
-                   (railToggle.js), and the canvas keydown handler (keyboardNav.js) for
-                   arrow/+-/Home pan and zoom.
+                   (railToggle.js), the canvas keydown handler (keyboardNav.js) for
+                   arrow/+-/Home pan and zoom, and the first-visit pan-hint's dismissal
+                   (hint.js) on the first drag/pinch/wheel/keyboard gesture.
   style.css        Design tokens (see docs/DESIGN.md) as CSS custom properties, toolbar/canvas/
                    scheme-panel layout, plus the export button, mute toggle, camera-flash
                    overlay, toast, crosshair, survey readout, and inspector panel styling. Below
