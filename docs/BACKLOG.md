@@ -203,11 +203,20 @@ them.
     override; `pointer-events: none` on `.pan-hint` means it never intercepts the canvas's own
     gesture handlers.
 
-- [ ] **3.9 Shareable view link**
+- [x] **3.9 Shareable view link**
   - AC: a "Copy link" control encodes the current camera (pan + zoom) and coloring scheme into
     the page URL; visiting that URL restores the exact same view.
+    ✅ `viewLink.test.js` covers the encode/decode round trip; verified with Playwright — panned,
+    zoomed to 1.20×, switched to Orientation, copied the link, navigated to it, and got back
+    zoom 1.20× with Orientation still pressed.
   - AC: a malformed or missing URL hash falls back to the default view without throwing or
     showing a blank/broken canvas.
+    ✅ `viewLink.test.js` covers empty/malformed/unrecognized-scheme hashes (all return `null`);
+    verified live with a `#garbage=1&x=nope` hash — default 1.00× view rendered, zero console
+    errors.
+  - Note: fixed a pre-existing bug found while wiring this up — Export SVG shared the
+    `.scheme-btn` class and was also triggering the generic scheme-switch handler on click,
+    corrupting `scheme` and every button's `aria-pressed` state (see the `fix:` commit).
 
 - [ ] **3.5 Final design ship-gate pass**
   - AC: every D4 reject condition in `docs/DESIGN.md` is checked and false (no unstyled native
