@@ -1,6 +1,7 @@
 import { createCamera, panBy, screenToWorld, zoomAt } from "./core/camera.js";
 import { DEFAULT_PALETTE, PALETTES } from "./core/palette.js";
 import { draw } from "./core/renderer.js";
+import { createRipple, isRippleComplete, rippleColor } from "./core/ripple.js";
 import { createTileField } from "./core/tileField.js";
 
 const canvas = document.getElementById("tiling-canvas");
@@ -13,8 +14,14 @@ let size = { width: 0, height: 0 };
 let dragging = false;
 let lastPointer = { x: 0, y: 0 };
 let scheme = "";
+let activeRipple = null;
+let rippleStartTime = 0;
 
 const tileField = createTileField();
+
+function prefersReducedMotion() {
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+}
 
 // Fetch tiles for a region larger than the viewport so panning reveals
 // tiles that are already generated, instead of popping in at the edge.
@@ -43,9 +50,23 @@ function resize() {
   render();
 }
 
-function render() {
-  draw(ctx, camera, size, palette, visibleTiles(), scheme);
+function render(rippleElapsedMs) {
+  const tiles = visibleTiles();
+  const colorFor =
+    activeRipple != null ? (tile) => rippleColor(activeRipple, tile, rippleElapsedMs) : null;
+  draw(ctx, camera, size, palette, tiles, scheme, colorFor);
   zoomReadout.textContent = `zoom ${camera.zoom.toFixed(2)}×`;
+}
+
+function tickRipple(now) {
+  if (!activeRipple) return;
+  const elapsed = now - rippleStartTime;
+  render(elapsed);
+  if (isRippleComplete(elapsed)) {
+    activeRipple = null;
+    return;
+  }
+  requestAnimationFrame(tickRipple);
 }
 
 function pointerPos(event) {
@@ -89,10 +110,33 @@ canvas.addEventListener(
 
 const schemeButtons = [...document.querySelectorAll(".scheme-btn")];
 schemeButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    scheme = button.dataset.scheme;
+  button.addEventListener("click", (event) => {
+    const nextScheme = button.dataset.scheme;
+    if (nextScheme === scheme) return;
     schemeButtons.forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
-    render();
+
+    if (prefersReducedMotion()) {
+      scheme = nextScheme;
+      activeRipple = null;
+      render();
+      return;
+    }
+
+    const rect = canvas.getBoundingClientRect();
+    const clickPoint = screenToWorld(camera, {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    });
+    activeRipple = createRipple({
+      tiles: visibleTiles(),
+      fromScheme: scheme,
+      toScheme: nextScheme,
+      clickPoint,
+      fallbackColor: palette.tile,
+    });
+    scheme = nextScheme;
+    rippleStartTime = performance.now();
+    requestAnimationFrame(tickRipple);
   });
 });
 
