@@ -23,7 +23,11 @@
         </div>
       </header>
       <div class="canvas-wrap">
-        <canvas id="tiling-canvas" aria-label="Infinite monotile pattern, draggable to pan"></canvas>
+        <canvas
+          id="tiling-canvas"
+          tabindex="0"
+          aria-label="Infinite monotile pattern. Drag or pinch to pan and zoom, or use the arrow keys, +/-, and Home once focused."
+        ></canvas>
         <div class="scheme-panel" id="scheme-panel" role="group" aria-label="Coloring scheme">
           <button
             type="button"
