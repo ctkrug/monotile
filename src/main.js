@@ -1,7 +1,10 @@
 import { isMuted, playExportShutter, playRecolorChime, setMuted } from "./core/audio.js";
 import { createCamera, panBy, screenToWorld, zoomAt } from "./core/camera.js";
+import { orientationDegrees } from "./core/coloring.js";
 import { boundsIntersect, boundsOf } from "./core/geometry.js";
+import { findTileAt } from "./core/inspector.js";
 import { DEFAULT_PALETTE, PALETTES } from "./core/palette.js";
+import { isPulseComplete, pulseIntensity } from "./core/pulse.js";
 import { draw } from "./core/renderer.js";
 import { createRipple, isRippleComplete, rippleColor } from "./core/ripple.js";
 import { buildSvg } from "./core/svgExport.js";
@@ -14,6 +17,14 @@ const exportBtn = document.getElementById("export-btn");
 const flashEl = document.getElementById("export-flash");
 const toastEl = document.getElementById("toast");
 const muteToggle = document.getElementById("mute-toggle");
+const crosshairEl = document.getElementById("crosshair");
+const surveyReadout = document.getElementById("survey-readout");
+const inspectorPanel = document.getElementById("inspector-panel");
+const inspectorClose = document.getElementById("inspector-close");
+const inspectorType = document.getElementById("inspector-type");
+const inspectorGeneration = document.getElementById("inspector-generation");
+const inspectorOrientation = document.getElementById("inspector-orientation");
+const inspectorLineage = document.getElementById("inspector-lineage");
 let toastTimer = null;
 
 function syncMuteToggle() {
@@ -37,6 +48,9 @@ let lastPointer = { x: 0, y: 0 };
 let scheme = "";
 let activeRipple = null;
 let rippleStartTime = 0;
+let pinnedTile = null;
+let pulseStartTime = 0;
+let pointerDownPos = null;
 
 const tileField = createTileField();
 
@@ -101,7 +115,10 @@ function render(rippleElapsedMs) {
   const tiles = visibleTiles();
   const colorFor =
     activeRipple != null ? (tile) => rippleColor(activeRipple, tile, rippleElapsedMs) : null;
-  draw(ctx, camera, size, palette, tiles, scheme, colorFor);
+  const highlight = pinnedTile
+    ? { tile: pinnedTile, intensity: pulseIntensity(performance.now() - pulseStartTime) }
+    : null;
+  draw(ctx, camera, size, palette, tiles, scheme, colorFor, highlight);
   zoomReadout.textContent = `zoom ${camera.zoom.toFixed(2)}×`;
 }
 
@@ -116,33 +133,107 @@ function tickRipple(now) {
   requestAnimationFrame(tickRipple);
 }
 
+function tickPulse(now) {
+  if (!pinnedTile) return;
+  render();
+  if (!isPulseComplete(now - pulseStartTime)) {
+    requestAnimationFrame(tickPulse);
+  }
+}
+
+function updateSurveyReadout(pos) {
+  const worldPoint = screenToWorld(camera, pos);
+  const tile = findTileAt(visibleTiles(), worldPoint);
+  crosshairEl.style.left = `${pos.x}px`;
+  crosshairEl.style.top = `${pos.y}px`;
+  crosshairEl.classList.add("visible");
+  surveyReadout.style.left = `${pos.x}px`;
+  surveyReadout.style.top = `${pos.y}px`;
+  surveyReadout.textContent =
+    `x: ${Math.round(worldPoint.x)}, y: ${Math.round(worldPoint.y)} · ` +
+    `gen ${tile ? tile.depth : "–"} · ${tile ? tile.label : "—"}`;
+  surveyReadout.classList.add("visible");
+}
+
+function hideSurveyReadout() {
+  crosshairEl.classList.remove("visible");
+  surveyReadout.classList.remove("visible");
+}
+
+function showInspector(tile) {
+  inspectorType.textContent = tile.label;
+  inspectorGeneration.textContent = String(tile.depth);
+  inspectorOrientation.textContent = `${Math.round(orientationDegrees(tile.transform))}°`;
+  inspectorLineage.textContent = tile.id || "(root)";
+  inspectorPanel.hidden = false;
+}
+
+function pinTileAt(pos) {
+  const worldPoint = screenToWorld(camera, pos);
+  const tile = findTileAt(visibleTiles(), worldPoint);
+  if (!tile) {
+    pinnedTile = null;
+    inspectorPanel.hidden = true;
+    render();
+    return;
+  }
+  pinnedTile = tile;
+  showInspector(tile);
+  pulseStartTime = performance.now();
+  requestAnimationFrame(tickPulse);
+}
+
+inspectorClose.addEventListener("click", () => {
+  pinnedTile = null;
+  inspectorPanel.hidden = true;
+  render();
+});
+
 function pointerPos(event) {
   const rect = canvas.getBoundingClientRect();
   return { x: event.clientX - rect.left, y: event.clientY - rect.top };
 }
 
+// Below this distance (in screen px), a pointerdown/pointerup pair counts as
+// a click-to-pin rather than a pan drag.
+const CLICK_DRAG_THRESHOLD = 4;
+
 canvas.addEventListener("pointerdown", (event) => {
   dragging = true;
   lastPointer = pointerPos(event);
+  pointerDownPos = lastPointer;
   canvas.setPointerCapture(event.pointerId);
 });
 
 canvas.addEventListener("pointermove", (event) => {
-  if (!dragging) return;
   const pos = pointerPos(event);
-  const delta = { x: pos.x - lastPointer.x, y: pos.y - lastPointer.y };
-  camera = panBy(camera, delta);
-  lastPointer = pos;
-  render();
+  if (dragging) {
+    const delta = { x: pos.x - lastPointer.x, y: pos.y - lastPointer.y };
+    camera = panBy(camera, delta);
+    lastPointer = pos;
+    render();
+  }
+  updateSurveyReadout(pos);
 });
 
 function endDrag() {
   dragging = false;
+  pointerDownPos = null;
 }
 
-canvas.addEventListener("pointerup", endDrag);
+canvas.addEventListener("pointerup", (event) => {
+  if (pointerDownPos) {
+    const pos = pointerPos(event);
+    const moved = Math.hypot(pos.x - pointerDownPos.x, pos.y - pointerDownPos.y);
+    if (moved < CLICK_DRAG_THRESHOLD) pinTileAt(pos);
+  }
+  endDrag();
+});
 canvas.addEventListener("pointercancel", endDrag);
-canvas.addEventListener("pointerleave", endDrag);
+canvas.addEventListener("pointerleave", () => {
+  endDrag();
+  hideSurveyReadout();
+});
 
 canvas.addEventListener(
   "wheel",
