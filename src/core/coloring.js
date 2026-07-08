@@ -42,14 +42,15 @@ function generationColor(tile) {
   return hsl(hue, 70, 55);
 }
 
-function orientationAngleDegrees(transform) {
+/** The placement rotation encoded in an affine transform, in degrees. */
+export function orientationDegrees(transform) {
   const [a, , , c] = transform;
   const radians = Math.atan2(c, a);
   return (radians * 180) / Math.PI;
 }
 
 function orientationColor(tile) {
-  const angle = orientationAngleDegrees(tile.transform);
+  const angle = orientationDegrees(tile.transform);
   const bucket = Math.round(angle / 15) * 15;
   return hsl(bucket, 60, 58);
 }
