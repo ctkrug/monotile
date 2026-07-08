@@ -179,12 +179,17 @@ them.
     shared `:focus-visible` rule already covers it); `Home` returned the zoom readout to 1.00×
     after zooming in.
 
-- [ ] **3.7 Collapsible desktop control rail**
+- [x] **3.7 Collapsible desktop control rail**
   - AC: on desktop widths, a toggle collapses the scheme panel to a slim docked tab (mirroring
     `docs/DESIGN.md`'s "collapsible to a slim icon rail" layout intent, left as a known gap by
     story 2.1) without the canvas ever resizing to make room for it.
+    ✅ `railToggle.js` + `.rail-collapsed` CSS; verified with Playwright at 1440×900 — collapses
+    to a 44px docked tab, canvas (`position: absolute` overlay panel) never resizes.
   - AC: the collapsed tab is reachable via keyboard and screen readers (`aria-expanded`, a
     ≥44px touch target) and re-expands to the exact prior panel state.
+    ✅ `railToggle.test.js` covers the label/glyph/expanded-state logic; verified live —
+    `aria-expanded` flips true/false, the 44×44px button is focusable, and the previously
+    selected scheme ("Line") is still shown pressed after re-expanding.
 
 - [ ] **3.5 Final design ship-gate pass**
   - AC: every D4 reject condition in `docs/DESIGN.md` is checked and false (no unstyled native
