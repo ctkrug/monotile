@@ -2,6 +2,7 @@ import { isMuted, playExportShutter, playRecolorChime, setMuted } from "./core/a
 import { createCamera, panBy, screenToWorld, zoomAt } from "./core/camera.js";
 import { orientationDegrees } from "./core/coloring.js";
 import { boundsIntersect, boundsOf } from "./core/geometry.js";
+import { hasSeenHint, markHintSeen } from "./core/hint.js";
 import { findTileAt } from "./core/inspector.js";
 import { isResetKey, panStepForKey, zoomFactorForKey } from "./core/keyboardNav.js";
 import { DEFAULT_PALETTE, PALETTES } from "./core/palette.js";
@@ -23,6 +24,7 @@ const muteToggle = document.getElementById("mute-toggle");
 const schemePanel = document.getElementById("scheme-panel");
 const sheetHandle = document.getElementById("sheet-handle");
 const railToggle = document.getElementById("rail-toggle");
+const panHintEl = document.getElementById("pan-hint");
 const crosshairEl = document.getElementById("crosshair");
 const surveyReadout = document.getElementById("survey-readout");
 const inspectorPanel = document.getElementById("inspector-panel");
@@ -45,6 +47,18 @@ muteToggle.addEventListener("click", () => {
 });
 
 syncMuteToggle();
+
+if (hasSeenHint()) {
+  panHintEl.classList.add("pan-hint-dismissed");
+}
+
+// Dismissed the first time the visitor pans, zooms, or uses a keyboard
+// shortcut, then never shown again (persisted via hint.js). A no-op once
+// already dismissed, so every gesture handler can call it unconditionally.
+function dismissPanHint() {
+  panHintEl.classList.add("pan-hint-dismissed");
+  markHintSeen();
+}
 
 // Mobile-only bottom sheet: inert at desktop widths where CSS never applies
 // the collapsed transform, so this toggle is harmless to leave wired up.
@@ -230,6 +244,7 @@ function pointerPos(event) {
 const CLICK_DRAG_THRESHOLD = 4;
 
 canvas.addEventListener("pointerdown", (event) => {
+  dismissPanHint();
   const pos = pointerPos(event);
   activePointers.set(event.pointerId, pos);
 
@@ -318,6 +333,7 @@ canvas.addEventListener(
   "wheel",
   (event) => {
     event.preventDefault();
+    dismissPanHint();
     const factor = Math.exp(-event.deltaY * 0.001);
     camera = zoomAt(camera, pointerPos(event), factor);
     render();
@@ -328,6 +344,7 @@ canvas.addEventListener(
 canvas.addEventListener("keydown", (event) => {
   if (isResetKey(event.key)) {
     event.preventDefault();
+    dismissPanHint();
     camera = createCamera();
     render();
     return;
@@ -336,6 +353,7 @@ canvas.addEventListener("keydown", (event) => {
   const panStep = panStepForKey(event.key, { shiftKey: event.shiftKey });
   if (panStep) {
     event.preventDefault();
+    dismissPanHint();
     camera = panBy(camera, panStep);
     render();
     return;
@@ -344,6 +362,7 @@ canvas.addEventListener("keydown", (event) => {
   const zoomFactor = zoomFactorForKey(event.key);
   if (zoomFactor) {
     event.preventDefault();
+    dismissPanHint();
     camera = zoomAt(camera, { x: size.width / 2, y: size.height / 2 }, zoomFactor);
     render();
   }
