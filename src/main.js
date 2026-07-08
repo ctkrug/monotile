@@ -5,6 +5,7 @@ import { createTileField } from "./core/tileField.js";
 
 const canvas = document.getElementById("tiling-canvas");
 const ctx = canvas.getContext("2d");
+const zoomReadout = document.getElementById("zoom-readout");
 
 let camera = createCamera();
 let palette = PALETTES[DEFAULT_PALETTE];
@@ -43,6 +44,7 @@ function resize() {
 
 function render() {
   draw(ctx, camera, size, palette, visibleTiles());
+  zoomReadout.textContent = `zoom ${camera.zoom.toFixed(2)}×`;
 }
 
 function pointerPos(event) {
