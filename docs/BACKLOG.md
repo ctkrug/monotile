@@ -167,12 +167,17 @@ them.
     ✅ N/A by design, not a gap: Monotile has no separate marketing/landing page — `index.html`
     *is* the app, so there's only ever one surface and it trivially can't seam against itself.
 
-- [ ] **3.6 Keyboard-operable canvas pan/zoom**
+- [x] **3.6 Keyboard-operable canvas pan/zoom**
   - AC: with the canvas focused, arrow keys pan the view (a larger step with Shift held) and
     `+`/`-` zoom in/out, each producing the same immediate visual change as the equivalent
     drag/wheel gesture.
+    ✅ `keyboardNav.test.js` covers the pure key mapping; verified live with Playwright — arrow
+    key panned, `+` moved the zoom readout from 1.00× to 1.20×.
   - AC: the canvas is reachable via Tab and shows the same `:focus-visible` treatment as every
     other control; `Home` resets pan and zoom to the initial view.
+    ✅ Verified with Playwright: Tab reaches `#tiling-canvas` right after the mute toggle (the
+    shared `:focus-visible` rule already covers it); `Home` returned the zoom readout to 1.00×
+    after zooming in.
 
 - [ ] **3.7 Collapsible desktop control rail**
   - AC: on desktop widths, a toggle collapses the scheme panel to a slim docked tab (mirroring
