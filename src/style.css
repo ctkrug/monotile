@@ -246,6 +246,124 @@ body {
   transform: translate(-50%, 0);
 }
 
+.crosshair {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity var(--transition-ui);
+  z-index: 4;
+}
+
+.crosshair.visible {
+  opacity: 1;
+}
+
+.crosshair::before,
+.crosshair::after {
+  content: "";
+  position: absolute;
+  background: var(--accent-support);
+}
+
+.crosshair::before {
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.crosshair::after {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.survey-readout {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(14px, 14px);
+  padding: var(--space-1) var(--space-2);
+  background: var(--panel-bg);
+  border: 1px solid rgba(94, 200, 255, 0.25);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition-ui);
+  z-index: 4;
+}
+
+.survey-readout.visible {
+  opacity: 1;
+}
+
+.inspector-panel {
+  position: absolute;
+  left: var(--space-4);
+  bottom: var(--space-4);
+  min-width: 220px;
+  padding: var(--space-4);
+  background: var(--panel-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-panel);
+  border: 1px solid rgba(255, 180, 84, 0.3);
+}
+
+.inspector-close {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  width: 28px;
+  height: 28px;
+  min-height: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--transition-ui), color var(--transition-ui);
+}
+
+.inspector-close:hover {
+  color: var(--text);
+  background: rgba(94, 200, 255, 0.1);
+}
+
+.inspector-panel dl {
+  margin: 0;
+  padding-right: var(--space-6);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.inspector-panel dt {
+  color: var(--text-muted);
+}
+
+.inspector-panel dd {
+  margin: 0;
+  color: var(--text);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
 @media (max-width: 480px) {
   .scheme-panel {
     top: var(--space-3);
@@ -283,6 +401,17 @@ body {
   .toast {
     width: calc(100% - var(--space-6));
     text-align: center;
+  }
+
+  .inspector-panel {
+    left: var(--space-3);
+    right: var(--space-3);
+    bottom: var(--space-3);
+    min-width: 0;
+  }
+
+  .survey-readout {
+    display: none;
   }
 }
 
