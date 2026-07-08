@@ -47,9 +47,47 @@ body {
 }
 
 #app {
-  position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100vw;
   height: 100vh;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 56px;
+  padding: 0 var(--space-5);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-panel);
+  z-index: 1;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+.wordmark-dot {
+  color: var(--accent);
+}
+
+.readout {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.canvas-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 #tiling-canvas {
@@ -62,6 +100,21 @@ body {
 
 #tiling-canvas:active {
   cursor: grabbing;
+}
+
+@media (max-width: 480px) {
+  .toolbar {
+    flex-basis: 48px;
+    padding: 0 var(--space-4);
+  }
+
+  .wordmark {
+    font-size: 1.05rem;
+  }
+
+  .readout {
+    font-size: 0.7rem;
+  }
 }
 
 :focus-visible {
