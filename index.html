@@ -3,11 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Monotile — the shape that never repeats</title>
+    <title>Monotile — Pan an infinite tiling, export it as art</title>
     <meta
       name="description"
-      content="Pan an infinite, never-repeating tiling made from a single 2023 einstein hat/spectre tile, then export it as poster art."
+      content="Explore the 2023 einstein hat and spectre tiles: pan an infinite, never-repeating tiling in your browser, recolor it, and export any view as a clean SVG poster."
     />
+    <meta property="og:title" content="Monotile — Pan an infinite tiling, export it as art" />
+    <meta
+      property="og:description"
+      content="Pan an infinite, never-repeating tiling built from the 2023 einstein hat/spectre monotile, then export it as clean SVG poster art."
+    />
+    <meta property="og:type" content="website" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./src/style.css" />
   </head>
@@ -17,6 +23,13 @@
         <span class="wordmark">Monotile<span class="wordmark-dot">.</span></span>
         <div class="toolbar-right">
           <span class="readout" id="zoom-readout" role="status">zoom 1.00&times;</span>
+          <a
+            class="icon-btn toolbar-link"
+            href="https://github.com/ctkrug/monotile"
+            target="_blank"
+            rel="noopener"
+            >GitHub</a
+          >
           <button type="button" class="icon-btn" id="mute-toggle" aria-pressed="false">
             Sound: On
           </button>
@@ -30,7 +43,7 @@
         ></canvas>
         <div class="pan-hint" id="pan-hint" aria-hidden="true">
           <span class="pan-hint-arrow" aria-hidden="true">&larr;</span>
-          drag to explore — it never repeats
+          drag to explore, it never repeats
           <span class="pan-hint-arrow" aria-hidden="true">&rarr;</span>
         </div>
         <div class="scheme-panel" id="scheme-panel" role="group" aria-label="Coloring scheme">
@@ -90,6 +103,103 @@
       <div class="flash" id="export-flash" aria-hidden="true"></div>
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </div>
+
+    <main class="about" id="about">
+      <section class="about-inner">
+        <h1 class="about-title">Monotile</h1>
+        <p class="about-lede">
+          Pan an infinite, never-repeating tiling built from the 2023 einstein hat and spectre
+          shapes, then export the view you like as clean SVG poster art.
+        </p>
+
+        <figure class="about-figure">
+          <img
+            class="about-sample"
+            src="./docs/sample-tiling.svg"
+            alt="A spectre tiling colored by supertile, exported from Monotile as SVG"
+            loading="lazy"
+            width="1360"
+            height="860"
+          />
+          <figcaption>A real export from the app, colored by supertile membership.</figcaption>
+        </figure>
+
+        <h2>What Monotile is</h2>
+        <p>
+          In 2023, David Smith, Joseph Samuel Myers, Craig S. Kaplan, and Chaim Goodman-Strauss
+          found the "hat", the first single shape that tiles the whole plane without its pattern
+          ever repeating. A few months later they found the "spectre", a relative that does the
+          same job without needing a mirror-image copy. It settled a question mathematicians had
+          asked since the 1970s: can one tile, on its own, force a pattern that is never periodic?
+        </p>
+        <p>
+          Almost everyone who has heard of these tiles has only seen a still picture. Monotile
+          lets you grab the pattern and move it. Drag the canvas and watch new tiles keep filling
+          space in every direction, generated live by the spectre substitution system rather than
+          copied from a looping image. It runs entirely in your browser, with no login and nothing
+          to install.
+        </p>
+
+        <h2>How to use it</h2>
+        <ol class="about-steps">
+          <li><strong>Pan and zoom.</strong> Drag the canvas to move; scroll to zoom into the point under your cursor. Arrow keys, <code>+</code>/<code>-</code>, and <code>Home</code> work once the canvas is focused, and touch devices pan with one finger and pinch with two.</li>
+          <li><strong>Recolor.</strong> Pick Supertile, Generation, or Orientation to color every tile by its place in the substitution, or keep the flat Line view. Each change ripples outward from where you click.</li>
+          <li><strong>Inspect.</strong> A crosshair readout follows your cursor with coordinates, generation, and tile type. Click a tile to pin its full lineage.</li>
+          <li><strong>Export or share.</strong> Export SVG saves the current view as a standalone vector file. Copy Link puts the exact pan, zoom, and coloring into the URL.</li>
+        </ol>
+
+        <h2>FAQ</h2>
+        <dl class="faq">
+          <dt>What is the einstein tile?</dt>
+          <dd>
+            An "einstein" (from the German <em>ein stein</em>, one stone) is a single shape that
+            tiles the plane only in non-repeating ways. The hat, found in 2023, was the first one
+            proven to exist. The name is a pun, not a reference to the physicist.
+          </dd>
+
+          <dt>What is the difference between the hat and the spectre?</dt>
+          <dd>
+            The hat needs both itself and its mirror image to tile without repeating. The spectre,
+            found shortly after, tiles aperiodically using only one handedness, so it is a "true"
+            single tile. Monotile draws the spectre.
+          </dd>
+
+          <dt>Does the pattern really never repeat?</dt>
+          <dd>
+            Yes. Monotile builds tiles by substitution, the same method the original paper uses to
+            prove aperiodicity, so no matter how far you pan you are always inside honest,
+            non-repeating output rather than a large image that loops at the edges.
+          </dd>
+
+          <dt>Can I use the exported art?</dt>
+          <dd>
+            The SVG you export is a plain vector file you can open, edit, and print in any tool.
+            Monotile is open source under the MIT license, so the code and what you make with it
+            are yours to use.
+          </dd>
+
+          <dt>Do I need an account or an install?</dt>
+          <dd>
+            No. Everything runs client-side in the browser. There is no sign-up, no server, and
+            nothing to download to explore or export.
+          </dd>
+        </dl>
+
+        <div class="about-cta">
+          <a class="cta-btn" href="https://github.com/ctkrug/monotile" target="_blank" rel="noopener">
+            View on GitHub
+          </a>
+        </div>
+
+        <footer class="about-footer">
+          More by Charlie Krug &rarr;
+          <a href="https://apps.charliekrug.com" target="_blank" rel="noopener"
+            >apps.charliekrug.com</a
+          >
+        </footer>
+      </section>
+    </main>
+
     <script type="module" src="./src/main.js"></script>
   </body>
 </html>
