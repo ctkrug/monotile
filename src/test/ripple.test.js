@@ -89,6 +89,24 @@ describe("rippleColor", () => {
     expect(rippleColor(ripple, far, midway)).not.toBe(colorForTile(far, "supertile"));
   });
 
+  it("returns a mid-fade blend for a tile strictly between its delay and delay+FADE_MS", () => {
+    const near = squareTile([0, 0]);
+    const far = squareTile([100, 0]);
+    const ripple = createRipple({
+      tiles: [near, far],
+      fromScheme: "",
+      toScheme: "supertile",
+      clickPoint: { x: 0, y: 0 },
+      fallbackColor: fallback,
+    });
+    // far's delay is 130ms (maxDistance reached); 180ms elapsed puts it at
+    // t=0.4167 — strictly inside the cross-fade, not yet at either endpoint.
+    const blended = rippleColor(ripple, far, 180);
+    expect(blended).not.toBe(fallback);
+    expect(blended).not.toBe(colorForTile(far, "supertile"));
+    expect(blended).toMatch(/^rgb\(/);
+  });
+
   it("falls back to fallbackColor when a scheme resolves to no override", () => {
     const tile = squareTile([0, 0]);
     const ripple = createRipple({
