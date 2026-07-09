@@ -50,6 +50,11 @@ describe("geometry", () => {
   it("detects overlapping bounding boxes, including edge-touching", () => {
     expect(boundsIntersect([0, 0, 5, 5], [4, 4, 10, 10])).toBe(true);
     expect(boundsIntersect([0, 0, 5, 5], [5, 5, 10, 10])).toBe(true);
+    // Mirror of the case above: exercises the a[0]<=b[2] and a[1]<=b[3]
+    // boundaries specifically (the previous case only touched on
+    // a[2]>=b[0] and a[3]>=b[1]) — a mutation flipping either <= to < was
+    // otherwise invisible to this suite.
+    expect(boundsIntersect([5, 5, 10, 10], [0, 0, 5, 5])).toBe(true);
   });
 
   it("detects non-overlapping bounding boxes", () => {
