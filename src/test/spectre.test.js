@@ -99,6 +99,12 @@ describe("spectre substitution rules", () => {
     expect(counts).toEqual(expected);
   });
 
+  it("treats a negative generation as generation 0 instead of crashing", () => {
+    const base = buildHierarchy(0).Delta;
+    const negative = buildHierarchy(-3).Delta;
+    expect(countLeaves(negative)).toBe(countLeaves(base));
+  });
+
   it("converges to a stable growth ratio across generations", () => {
     const counts = [2, 3, 4].map((g) => countLeaves(buildHierarchy(g).Delta));
     const ratioA = counts[1] / counts[0];
