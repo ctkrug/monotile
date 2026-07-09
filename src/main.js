@@ -173,23 +173,51 @@ function render(rippleElapsedMs) {
   zoomReadout.textContent = `zoom ${camera.zoom.toFixed(2)}×`;
 }
 
+// Guards against rapid re-clicks (a new scheme click, or re-pinning a tile,
+// before the previous animation finished) piling up redundant concurrent
+// rAF chains — each tick already re-reads the current activeRipple/
+// pinnedTile state, so at most one chain of each kind ever needs to run.
+let rippleLoopRunning = false;
+let pulseLoopRunning = false;
+
 function tickRipple(now) {
-  if (!activeRipple) return;
+  if (!activeRipple) {
+    rippleLoopRunning = false;
+    return;
+  }
   const elapsed = now - rippleStartTime;
   render(elapsed);
   if (isRippleComplete(elapsed)) {
     activeRipple = null;
+    rippleLoopRunning = false;
     return;
   }
   requestAnimationFrame(tickRipple);
 }
 
+function startRippleLoop() {
+  if (rippleLoopRunning) return;
+  rippleLoopRunning = true;
+  requestAnimationFrame(tickRipple);
+}
+
 function tickPulse(now) {
-  if (!pinnedTile) return;
-  render();
-  if (!isPulseComplete(now - pulseStartTime)) {
-    requestAnimationFrame(tickPulse);
+  if (!pinnedTile) {
+    pulseLoopRunning = false;
+    return;
   }
+  render();
+  if (isPulseComplete(now - pulseStartTime)) {
+    pulseLoopRunning = false;
+    return;
+  }
+  requestAnimationFrame(tickPulse);
+}
+
+function startPulseLoop() {
+  if (pulseLoopRunning) return;
+  pulseLoopRunning = true;
+  requestAnimationFrame(tickPulse);
 }
 
 function updateSurveyReadout(pos) {
@@ -231,7 +259,7 @@ function pinTileAt(pos) {
   pinnedTile = tile;
   showInspector(tile);
   pulseStartTime = performance.now();
-  requestAnimationFrame(tickPulse);
+  startPulseLoop();
 }
 
 inspectorClose.addEventListener("click", () => {
@@ -405,7 +433,7 @@ schemeButtons.forEach((button) => {
     });
     scheme = nextScheme;
     rippleStartTime = performance.now();
-    requestAnimationFrame(tickRipple);
+    startRippleLoop();
   });
 });
 
