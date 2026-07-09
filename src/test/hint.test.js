@@ -39,6 +39,15 @@ describe("hint", () => {
     expect(() => markHintSeen()).not.toThrow();
   });
 
+  it("treats a hand-corrupted stored value as not-seen rather than throwing", () => {
+    globalThis.localStorage = {
+      getItem: () => "yes-please",
+      setItem: () => {},
+      removeItem: () => {},
+    };
+    expect(hasSeenHint()).toBe(false);
+  });
+
   it("does not throw when localStorage.getItem throws", () => {
     globalThis.localStorage = {
       getItem: () => {
