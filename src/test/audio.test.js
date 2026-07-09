@@ -69,6 +69,21 @@ describe("audio", () => {
     expect(create).not.toHaveBeenCalled();
   });
 
+  it("does not throw when merely accessing the localStorage global throws", async () => {
+    // A sandboxed/restricted environment can throw a SecurityError on
+    // *accessing* the global, not just calling its methods — which
+    // `typeof localStorage` itself would also trigger during module load.
+    Object.defineProperty(globalThis, "localStorage", {
+      get() {
+        throw new Error("SecurityError: storage disabled");
+      },
+      configurable: true,
+    });
+    const audio = await import("../core/audio.js");
+    expect(audio.isMuted()).toBe(false);
+    expect(() => audio.setMuted(true)).not.toThrow();
+  });
+
   it("does not throw when localStorage.getItem throws while reading persisted mute state", async () => {
     globalThis.localStorage = {
       getItem: () => {
