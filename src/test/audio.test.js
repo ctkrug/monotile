@@ -68,4 +68,62 @@ describe("audio", () => {
     audio.playExportShutter();
     expect(create).not.toHaveBeenCalled();
   });
+
+  it("does not throw when localStorage.getItem throws while reading persisted mute state", async () => {
+    globalThis.localStorage = {
+      getItem: () => {
+        throw new Error("blocked by privacy setting");
+      },
+      setItem: () => {},
+      removeItem: () => {},
+    };
+    const audio = await import("../core/audio.js");
+    expect(audio.isMuted()).toBe(false);
+  });
+
+  it("drives real oscillator/gain and buffer/filter graphs when AudioContext is available", async () => {
+    function fakeParam() {
+      return { value: 0, setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn() };
+    }
+    function fakeNode(extra = {}) {
+      const node = { connect: vi.fn((next) => next), ...extra };
+      return node;
+    }
+    const oscillators = [];
+    const buffers = [];
+    globalThis.AudioContext = function AudioContext() {
+      this.currentTime = 0;
+      this.sampleRate = 44100;
+      this.destination = fakeNode();
+      this.createOscillator = () => {
+        const osc = fakeNode({
+          frequency: fakeParam(),
+          type: "sine",
+          start: vi.fn(),
+          stop: vi.fn(),
+        });
+        oscillators.push(osc);
+        return osc;
+      };
+      this.createGain = () => fakeNode({ gain: fakeParam() });
+      this.createBuffer = (channels, length, sampleRate) => {
+        const data = new Float32Array(length);
+        buffers.push({ length, sampleRate });
+        return { getChannelData: () => data };
+      };
+      this.createBufferSource = () => fakeNode({ buffer: null, start: vi.fn() });
+      this.createBiquadFilter = () => fakeNode({ type: "lowpass", frequency: fakeParam() });
+    };
+
+    const audio = await import("../core/audio.js");
+    expect(() => audio.playRecolorChime()).not.toThrow();
+    expect(oscillators).toHaveLength(2);
+    expect(oscillators[0].start).toHaveBeenCalled();
+    expect(oscillators[0].frequency.value).toBe(440);
+    expect(oscillators[1].frequency.value).toBe(660);
+
+    expect(() => audio.playExportShutter()).not.toThrow();
+    expect(buffers).toHaveLength(1);
+    expect(buffers[0].length).toBeGreaterThan(0);
+  });
 });
