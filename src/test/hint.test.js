@@ -58,4 +58,20 @@ describe("hint", () => {
     };
     expect(hasSeenHint()).toBe(false);
   });
+
+  it("does not throw when merely accessing the localStorage global throws", () => {
+    // Some sandboxed/restricted environments (a locked-down iframe, storage
+    // fully disabled by policy) throw a SecurityError on *accessing* the
+    // global, not just on calling its methods — which `typeof localStorage`
+    // itself would also trigger.
+    Object.defineProperty(globalThis, "localStorage", {
+      get() {
+        throw new Error("SecurityError: storage disabled");
+      },
+      configurable: true,
+    });
+    expect(() => hasSeenHint()).not.toThrow();
+    expect(hasSeenHint()).toBe(false);
+    expect(() => markHintSeen()).not.toThrow();
+  });
 });
