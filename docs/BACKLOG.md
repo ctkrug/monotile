@@ -158,10 +158,11 @@ them.
   - AC: `npm run build` produces a single self-contained `dist/` directory that runs correctly
     when served from a non-root subpath (e.g. `/monotile/`) — verified by building and serving
     locally from a subpath, not just the domain root.
-    ✅ `npm run build` emits `dist/` with every asset reference relative (`./assets/...`, no
-    leading slash). Verified by copying `dist/` to `<tmp>/monotile/`, serving it from a plain
+    ✅ `npm run build` emits the bundle (now `site/`, renamed from `dist/` at CLOSEOUT to match
+    the factory's site_build_dir) with every asset reference relative (`./assets/...`, no
+    leading slash). Verified by copying the output to `<tmp>/monotile/`, serving it from a plain
     static file server, and loading `/monotile/` in Playwright: canvas rendered, zero console
-    errors, zero failed requests.
+    errors, zero failed requests. Relative-path output re-confirmed after the rename.
   - AC: the landing content and the in-app UI use the exact same `docs/DESIGN.md` tokens (fonts,
     colors, radius) — no visual seam between "marketing page" and "app."
     ✅ N/A by design, not a gap: Monotile has no separate marketing/landing page — `index.html`
@@ -218,8 +219,15 @@ them.
     `.scheme-btn` class and was also triggering the generic scheme-switch handler on click,
     corrupting `scheme` and every button's `aria-pressed` state (see the `fix:` commit).
 
-- [ ] **3.5 Final design ship-gate pass**
+- [x] **3.5 Final design ship-gate pass**
   - AC: every D4 reject condition in `docs/DESIGN.md` is checked and false (no unstyled native
     controls, has a real favicon, has background depth/atmosphere, hero isn't a small box in
     empty space), with the check itself noted in the CLOSEOUT STATUS `memory` field.
+    ✅ CLOSEOUT D4 review: canvas fills 100vh below the toolbar; every control themed with
+    hover/active/focus-visible states and no native widgets; Space Grotesk + JetBrains Mono
+    loaded; `favicon.svg` present; canvas grid and the landing section's graph-paper gradient
+    give background depth; no pure `#000`/`#fff` surfaces, emoji-card rows, or placeholder copy.
+    The landing copy is the same page and tokens as the app, so there's no brand seam.
   - AC: a full pan → recolor → export flow is exercised end to end with no console errors.
+    ✅ Re-verified across earlier phases with Playwright (pan, recolor ripple, SVG download);
+    the CLOSEOUT changes touch only static below-the-fold markup and add no new app JS paths.
