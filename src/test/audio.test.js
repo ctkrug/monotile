@@ -4,6 +4,7 @@ describe("audio", () => {
   afterEach(() => {
     delete globalThis.localStorage;
     delete globalThis.AudioContext;
+    delete globalThis.webkitAudioContext;
     vi.resetModules();
   });
 
@@ -140,5 +141,28 @@ describe("audio", () => {
     expect(() => audio.playExportShutter()).not.toThrow();
     expect(buffers).toHaveLength(1);
     expect(buffers[0].length).toBeGreaterThan(0);
+  });
+
+  it("falls back to webkitAudioContext when AudioContext isn't defined (old Safari)", async () => {
+    const create = vi.fn();
+    globalThis.webkitAudioContext = function webkitAudioContext() {
+      create();
+      this.createOscillator = () => ({
+        connect: () => ({ connect: () => {} }),
+        frequency: { value: 0 },
+        type: "sine",
+        start: vi.fn(),
+        stop: vi.fn(),
+      });
+      this.createGain = () => ({
+        connect: () => ({}),
+        gain: { value: 0, setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn() },
+      });
+      this.currentTime = 0;
+      this.destination = {};
+    };
+    const audio = await import("../core/audio.js");
+    expect(() => audio.playRecolorChime()).not.toThrow();
+    expect(create).toHaveBeenCalledTimes(1);
   });
 });
