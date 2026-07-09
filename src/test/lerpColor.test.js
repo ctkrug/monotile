@@ -31,6 +31,11 @@ describe("lerpColor", () => {
     expect(lerpColor("#5ec8ff", "#5ec8ff", 0.5)).toBe("rgb(94, 200, 255)");
   });
 
+  it("expands 3-digit shorthand hex the same as its 6-digit equivalent", () => {
+    expect(lerpColor("#f00", "#0f0", 0)).toBe("rgb(255, 0, 0)");
+    expect(lerpColor("#f00", "#0f0", 1)).toBe("rgb(0, 255, 0)");
+  });
+
   it("falls back to black for an unrecognized color format instead of throwing", () => {
     expect(() => lerpColor("not-a-color", "#ffffff", 0.5)).not.toThrow();
     expect(lerpColor("not-a-color", "#ffffff", 0.5)).toBe("rgb(128, 128, 128)");
