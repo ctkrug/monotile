@@ -9,10 +9,13 @@
 const MUTE_KEY = "monotile:muted";
 
 function readStoredMute() {
-  if (typeof localStorage === "undefined") return false;
   try {
+    if (typeof localStorage === "undefined") return false;
     return localStorage.getItem(MUTE_KEY) === "true";
   } catch {
+    // Storage unavailable, or merely accessing the global throws (a
+    // sandboxed iframe, storage disabled by policy) — `typeof localStorage`
+    // itself can throw in that case, so the check has to be inside the try.
     return false;
   }
 }
@@ -26,8 +29,8 @@ export function isMuted() {
 
 export function setMuted(value) {
   muted = value;
-  if (typeof localStorage === "undefined") return;
   try {
+    if (typeof localStorage === "undefined") return;
     localStorage.setItem(MUTE_KEY, String(value));
   } catch {
     // Storage unavailable (e.g. private mode quota) — mute still applies
