@@ -92,5 +92,5 @@ export function createTileField({
     return { tiles: [...cache.values()], added, removed };
   }
 
-  return { update, tileCount: () => cache.size };
+  return { update };
 }
