@@ -30,4 +30,10 @@ describe("lerpColor", () => {
   it("is a no-op when both colors are identical", () => {
     expect(lerpColor("#5ec8ff", "#5ec8ff", 0.5)).toBe("rgb(94, 200, 255)");
   });
+
+  it("falls back to black for an unrecognized color format instead of throwing", () => {
+    expect(() => lerpColor("not-a-color", "#ffffff", 0.5)).not.toThrow();
+    expect(lerpColor("not-a-color", "#ffffff", 0.5)).toBe("rgb(128, 128, 128)");
+    expect(lerpColor("", "", 1)).toBe("rgb(0, 0, 0)");
+  });
 });
