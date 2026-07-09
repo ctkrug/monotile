@@ -5,7 +5,7 @@ export default defineConfig({
   // subpath (e.g. apps.charliekrug.com/monotile), not just the domain root.
   base: "",
   build: {
-    outDir: "dist",
+    outDir: "site",
   },
   test: {
     environment: "node",
